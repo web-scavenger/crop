@@ -35,7 +35,7 @@ function downloadNewImg(event) {
 
 //draw image to canvas & draw crop frame
 function frameCutter(canvasImgPath, height, width) {
-    
+
     canvas.width = width;
     canvas.height = height;
 
@@ -43,6 +43,7 @@ function frameCutter(canvasImgPath, height, width) {
     ctx.drawImage(canvasImgPath, 0, 0);
 
     ctx.beginPath();
+    ctx.setLineDash([10, 15]);
     // start
     ctx.moveTo(startPoint + retreat, startPoint + retreat);
     // ctx.lineTo(startPoint + retreat, startPoint + retreat);
@@ -73,7 +74,7 @@ function putLine(startPoint, width, height) {
 
         if (event.offsetX > startPoint - 4 && event.offsetX < startPoint + 4 && event.offsetY > startPoint && event.offsetY < height) {
             canvas.style.cursor = 'e-resize';
-            canvas.addEventListener('mousedown',moveLeftLine);
+            canvas.addEventListener('mousedown', moveLeftLine);
         } else if (event.offsetY > startPoint - 4 && event.offsetY < startPoint + 4 && event.offsetX > startPoint && event.offsetX < width) {
             canvas.style.cursor = 'n-resize';
         } else if (event.offsetX > width - 84 && event.offsetX < width - 76 && event.offsetY > startPoint && event.offsetY < height - 80) {
@@ -90,31 +91,36 @@ function putLine(startPoint, width, height) {
 
 function moveLeftLine(event) {
     canvas.style.cursor = 'e-resize';
-    canvas.onmousemove = function(event){
+    canvas.onmousemove = function (event) {
         canvas.style.cursor = 'e-resize';
-    
-        ctx.clearRect(0, 0, canvas.width, canvas.width);
+        if (event.offsetX > canvas.width - 200) {
+            ctx.closePath()
+        }
+        else {
+            ctx.clearRect(0, 0, canvas.width, canvas.width);
 
-        ctx.drawImage(canvasImgPath, 0, 0);
-        ctx.beginPath();
-        ctx.moveTo(startPoint + event.offsetX, startPoint + retreat);
+            ctx.drawImage(canvasImgPath, 0, 0);
+            ctx.beginPath();
+            ctx.moveTo(startPoint + event.offsetX, startPoint + retreat);
 
-        // ctx.lineTo(startPoint + retreat + event.offsetX, startPoint + retreat);
-        // ctx.fillRect(startPoint + retreat - 5, startPoint + retreat -5, 10, 10);
+            // ctx.lineTo(startPoint + retreat + event.offsetX, startPoint + retreat);
+            // ctx.fillRect(startPoint + retreat - 5, startPoint + retreat -5, 10, 10);
 
-        ctx.lineTo(canvas.width - retreat, startPoint + retreat);
-        // ctx.fillRect(canvas.width - retreat - 5, startPoint + retreat -5, 10, 10);
+            ctx.lineTo(canvas.width - retreat, startPoint + retreat);
+            // ctx.fillRect(canvas.width - retreat - 5, startPoint + retreat -5, 10, 10);
 
-        ctx.lineTo(canvas.width - retreat, canvas.height - retreat);
-        // ctx.fillRect(canvas.width - retreat - 5, canvas.height - retreat -5, 10, 10);
+            ctx.lineTo(canvas.width - retreat, canvas.height - retreat);
+            // ctx.fillRect(canvas.width - retreat - 5, canvas.height - retreat -5, 10, 10);
 
-        ctx.lineTo(startPoint + event.offsetX, canvas.height - retreat);
-        // ctx.fillRect(startPoint +retreat - 5, canvas.height - retreat -5, 10, 10);
+            ctx.lineTo(startPoint + event.offsetX, canvas.height - retreat);
+            // ctx.fillRect(startPoint +retreat - 5, canvas.height - retreat -5, 10, 10);
 
-        ctx.lineTo(startPoint + event.offsetX, startPoint + retreat);
-        ctx.stroke();
+            ctx.lineTo(startPoint + event.offsetX, startPoint + retreat);
+            ctx.stroke();
+        }
+
     }
-   
+
     canvas.onmouseup = function () {
         canvas.style.cursor = 'default';
         canvas.onmousemove = null;
