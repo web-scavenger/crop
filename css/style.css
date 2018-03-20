@@ -38,5 +38,13 @@ header #add__new--img{
 .img__block .upload__img #canvas{
     width: 100%;
     height: 100%;
-    
+}
+
+.cut__btn{
+    width: 150px;
+    height: 50px;
+    border: 2px solid firebrick;
+    background: #fff;
+    color: darkslategray;
+    cursor: pointer;
 }
