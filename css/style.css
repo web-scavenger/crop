@@ -48,3 +48,7 @@ header #add__new--img{
     color: darkslategray;
     cursor: pointer;
 }
+
+.preview__block{
+    margin-bottom: 100px;
+}

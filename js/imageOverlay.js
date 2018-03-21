@@ -21,12 +21,19 @@ var retreatBottom = 80; // retreat for crop frame
 var minWidth = 0;
 var minHeight = 0;
 var percent = 5;
-
+// test
+// var leftRetreat = 0;
+// var topRetreat = 0;
 var canvasWidth;
 var canvasHeight;
 var mouseDown = false;
 var moveToY;
 var moveToX;
+var canvasOverlayTest = document.getElementById('overlay_canvas');
+var imgOverlay = new Image();
+
+ctxOv = canvasOverlayTest.getContext('2d');
+var canvasOverlayTestUrl;
 
 
 cutButton.addEventListener('click', cutImage);
@@ -92,7 +99,7 @@ function frameCutter(canvasImgPath, height, width) {
     //left
     ctx.lineTo(startPointX + retreat, startPointY + retreat);
 
-    frameOutside()
+    // frameOutside()
     ctx.restore();
     ctx.setLineDash([10, 15]);
     ctx.strokeStyle = 'red';
@@ -100,7 +107,7 @@ function frameCutter(canvasImgPath, height, width) {
     ctx.stroke();
     console.log(`${retreatTop} / ${canvasWidth}`);
     putLine();
-    // addOverlay();
+    addOverlay();
 
 
 
@@ -191,10 +198,10 @@ function moveLeftLine(event) {
             ctx.lineTo(event.offsetX, canvasHeight - endPointY);
 
             ctx.lineTo(event.offsetX, startPointY + retreatTop);
-            frameOutside();
+            // frameOutside();
 
             ctx.stroke();
-            // addOverlay();
+            addOverlay();
             // putLine();
             startPointX = event.offsetX;
             retreatLeft = 0;
@@ -242,8 +249,8 @@ function moveTopLine() {
 
             //left
             ctx.lineTo(startPointX + retreatLeft, startPointY + retreatTop);
-            frameOutside();
-            // addOverlay();
+            // frameOutside();
+            addOverlay();
             ctx.stroke();
             // putLine();
             startPointY = event.offsetY;
@@ -293,7 +300,7 @@ function moveRightLine() {
 
             ctx.lineTo(startPointX + retreatLeft, startPointY + retreatTop);
 
-            frameOutside();
+            // frameOutside();
             ctx.stroke();
             // putLine();
             // retreatRight = event.offsetX;
@@ -348,7 +355,7 @@ function moveBottomLine() {
 
             ctx.lineTo(startPointX + retreatLeft, startPointY + retreatTop);
 
-            frameOutside();
+            // frameOutside();
             ctx.stroke();
             // putLine();
             // retreatRight = event.offsetX;
@@ -418,6 +425,9 @@ function moveCutterFrame() {
 
     }
 
+
+
+
 }
 
 
@@ -464,3 +474,28 @@ function frameOutside() {
 // //left
 // ctx.lineTo(startPointX + retreatLeft, startPointY + retreatTop);
 
+
+
+function canvasOverlay() {
+    canvasOverlayTest.width = canvasWidth;
+canvasOverlayTest.height = canvasHeight;
+
+    ctxOv.fillStyle = "#22222285";
+    ctxOv.fillRect(startPoint, startPoint, canvasWidth, canvasHeight);
+    ctxOv.clearRect(retreatLeft + startPointX, retreatTop + startPointY, 50, 50);
+    canvasOverlayTestUrl = canvasOverlayTest.toDataURL();
+
+
+
+    imgOverlay.src = canvasOverlayTestUrl;
+    imgOverlay.onload = function () {
+        ctx.drawImage(this, startPoint, startPoint, canvasWidth, canvasHeight);
+    }
+
+
+
+}
+function addOverlay() {
+    canvasOverlay();
+
+}
