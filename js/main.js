@@ -7,29 +7,43 @@ var ctx = canvas.getContext('2d');
 var ctxPr = canvasPreview.getContext('2d');
 var cutButton = document.querySelector('.cut__btn');
 var canvasImgPath; // new img path for canvas
-var startPointX = 0; // start canvas position X
-var startPointY = 0; // start canvas position Y
+var startPointX = 80; // start canvas position X
+var startPointY = 80; // start canvas position Y
 var startPoint = 0;
 var endPointX = 80; // 
 var endPointY = 80; //
-var retreat = 80;
-var retreatTop = 80; // retreat for crop frame
-var retreatLeft = 80; // retreat for crop frame
-var retreatRight = 80; // retreat for crop frame
-var retreatBottom = 80; // retreat for crop frame
+var retreat = 0;
+var retreatTop = 0; // retreat for crop frame
+var retreatLeft = 0; // retreat for crop frame
+var retreatRight = 0; // retreat for crop frame
+var retreatBottom = 0; // retreat for crop frame
 // min size for cutter frame. 20% of dwnld img
 var minWidth = 0;
 var minHeight = 0;
 var percent = 5;
+var imagePercent = 0.8;
 
-var canvasWidth;
-var canvasHeight;
+var canvasWidth = this.innerWidth;
+var canvasHeight = this.innerHeight;
 var mouseDown = false;
 var moveToY;
 var moveToX;
+var timeMoveToX = 0;
+
+var originalImgWidth;
+var originalImgHeight;
+
+var windowWidth = 0;
+var windowHeight = 0;
 
 
 cutButton.addEventListener('click', cutImage);
+
+window.addEventListener('resize', function(){
+    canvasWidth = this.innerWidth;
+    canvasHeight = this.innerHeight;
+    frameCutter(canvasImgPath, canvasHeight, canvasWidth);
+})
 
 
 addNewImgBtn.addEventListener("change", downloadNewImg);
@@ -49,7 +63,7 @@ function downloadNewImg(event) {
             console.log(output.offsetHeight + ' / ' + output.offsetWidth)
             frameCutter(output, output.offsetHeight, output.offsetWidth);
             output.classList.add('display__none');
-
+            
         }
 
     };
@@ -60,34 +74,45 @@ function downloadNewImg(event) {
 
 //draw image to canvas & draw crop frame
 function frameCutter(canvasImgPath, height, width) {
-
-    canvas.width = width;
-    canvas.height = height;
+    
+    originalImgWidth = width;
+    originalImgHeight = height;
+    // canvas.width = width;
+    // canvas.height = height;
+    canvas.width = canvasWidth * imagePercent;
+    canvas.height = canvasHeight * imagePercent;
+    canvasHeight = canvas.height;
+    canvasWidth = canvas.width;
     minHeight = canvas.height / percent;
     minWidth = canvas.width / percent;
-
+    console.log(canvasWidth, canvasHeight)
     // test
-    canvasHeight = height;
-    canvasWidth = width;
+    // canvasHeight = height;
+    // canvasWidth = width;
+    startPointX = 80; // start canvas position X
+    startPointY = 80; // start canvas position Y
+
+    endPointX = 80; // 
+    endPointY = 80; //
 
 
 
 
-    ctx.drawImage(canvasImgPath, 0, 0);
+    ctx.drawImage(canvasImgPath, 0, 0, canvasWidth ,canvasHeight);
 
     ctx.beginPath();
 
 
     // start
-    ctx.moveTo(startPointX + retreat, startPointY + retreat);
+    ctx.moveTo(startPointX, startPointY);
     // top
-    ctx.lineTo(canvas.width - retreat, startPointY + retreat);
+    ctx.lineTo(canvas.width - endPointY, startPointY);
 
     //right
-    ctx.lineTo(canvas.width - retreat, canvas.height - retreat);
+    ctx.lineTo(canvas.width - endPointX, canvas.height - endPointY);
 
     // bottom
-    ctx.lineTo(startPointX + retreat, canvas.height - retreat);
+    ctx.lineTo(startPointX + retreat, canvas.height - endPointX);
 
     //left
     ctx.lineTo(startPointX + retreat, startPointY + retreat);
@@ -98,7 +123,7 @@ function frameCutter(canvasImgPath, height, width) {
     ctx.strokeStyle = 'red';
     ctx.lineWidth = 3;
     ctx.stroke();
-    console.log(`${retreatTop} / ${canvasWidth}`);
+   
     putLine();
     // addOverlay();
 
@@ -179,7 +204,7 @@ function moveLeftLine(event) {
             // leftRetreat = event.offsetX - retreat;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(canvasImgPath, 0, 0);
+            ctx.drawImage(canvasImgPath, 0, 0, canvasWidth ,canvasHeight);
 
             ctx.beginPath();
             ctx.moveTo(event.offsetX, startPointY + retreatTop);
@@ -225,7 +250,7 @@ function moveTopLine() {
             // topRetreat = event.offsetX - retreat;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            ctx.drawImage(canvasImgPath, 0, 0);
+            ctx.drawImage(canvasImgPath, 0, 0, canvasWidth ,canvasHeight);
 
             ctx.beginPath();
 
@@ -276,7 +301,7 @@ function moveRightLine() {
             // topRetreat = event.offsetX - retreat;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(canvasImgPath, 0, 0);
+            ctx.drawImage(canvasImgPath, 0, 0, canvasWidth ,canvasHeight);
 
             ctx.beginPath();
 
@@ -326,10 +351,9 @@ function moveBottomLine() {
         else {
             canvas.style.cursor = 's-resize';
             retreatBottom = 0;
-            // topRetreat = event.offsetX - retreat;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(canvasImgPath, 0, 0);
+            ctx.drawImage(canvasImgPath, 0, 0, canvasWidth ,canvasHeight);
 
             ctx.beginPath();
 
@@ -350,13 +374,8 @@ function moveBottomLine() {
 
             frameOutside();
             ctx.stroke();
-            // putLine();
-            // retreatRight = event.offsetX;
 
-
-            endPointY = canvasHeight - event.offsetY
-
-
+            endPointY = canvasHeight - event.offsetY;
 
         }
 
@@ -373,42 +392,68 @@ function moveBottomLine() {
 }
 
 function moveCutterFrame() {
-
     var startClickPointX = event.offsetX;
     var startClickPointY = event.offsetY;
-    // startPointX  = retreatLeft;
 
-
+    var counterStartPointX = 0;
+    var counterStartPointY = 0;
+    var counterEndPointX = 0;
+    var counterEndPointY = 0;
+    counterStartPointX = startPointX;
+    counterStartPointY = startPointY;
+    counterEndPointX = endPointX;
+    counterEndPointY = endPointY;
     canvas.onmousemove = function (event) {
 
         moveToX = event.offsetX - startClickPointX;
         moveToY = event.offsetY - startClickPointY;
+        if (startPointX < 5) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(canvasImgPath, 0, 0, canvasWidth ,canvasHeight);
+            ctx.beginPath();
+            var sliceLeftX = startPointX;
+            var sliceLeftY = startPointY;
+            var sliceWidth = canvasWidth - startPointX - endPointX;
+            var sliceHeight = canvasHeight - startPointY - endPointY;
+
+            ctx.rect(sliceLeftX, sliceLeftY, sliceWidth, sliceHeight);
+
+            frameOutside();
+            ctx.stroke();
+
+            startPointX = startPointX + 5;
+            startPointY = counterStartPointY + moveToY;
+            endPointX = counterEndPointX - moveToX;
+            endPointY = counterEndPointY - moveToY;
+
+        }
+        else {
+            console.log()
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(canvasImgPath, 0, 0, canvasWidth ,canvasHeight);
+            ctx.beginPath();
+            var sliceLeftX = startPointX;
+            var sliceLeftY = startPointY;
+            var sliceWidth = canvasWidth - startPointX - endPointX;
+            var sliceHeight = canvasHeight - startPointY - endPointY;
+
+            ctx.rect(sliceLeftX, sliceLeftY, sliceWidth, sliceHeight);
+
+            frameOutside();
+            ctx.stroke();
+
+            startPointX = counterStartPointX + moveToX;
+            startPointY = counterStartPointY + moveToY;
+            endPointX = counterEndPointX - moveToX;
+            endPointY = counterEndPointY - moveToY;
+        }
 
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(canvasImgPath, 0, 0);
 
-        ctx.beginPath();
-        ctx.rect(startPointX + retreatLeft, startPointY + retreatTop, canvasWidth - retreatRight - endPointX, canvasHeight - endPointY - retreatBottom);
-
-
-
-        // frameOutside();
-        // ctx.stroke();
-
-        console.log(startPointX, retreatLeft, moveToX);
-        startPointX = startPointX + retreatLeft + moveToX;
-        retreatLeft = 0;
-        console.log(startPointX, retreatLeft, moveToX);
-
-
-
-        // }
 
 
     }
     canvas.onmouseup = function () {
-
 
         canvas.style.cursor = 'default';
         canvas.onmousemove = null;
@@ -423,16 +468,25 @@ function moveCutterFrame() {
 
 
 function cutImage() {
-    var sliceLeftX = startPointX + retreatLeft;
-    var sliceLeftY = startPointY + retreatTop;
-    var sliceWidth = canvasWidth - retreatLeft - startPointX - endPointX;
-    var sliceHeight = canvasHeight - startPointY - retreatTop - endPointY;
+    // startPointX = startPointX * 1.5;
+    // startPointY = startPointY * 1.25;
+    var originaStartPointX = startPointX * 1.25;
+    var originaStartPointY = startPointY * 1.25;
+    var originaEndPointX = endPointX * 1.25;
+    var originaEndPointY = endPointY * 1.25;
+
+    
+    
+    var sliceLeftX = originaStartPointX + retreatLeft;
+    var sliceLeftY = originaStartPointY + retreatTop;
+    var sliceWidth = originalImgWidth - retreatLeft - originaStartPointX - originaEndPointX;
+    var sliceHeight = originalImgHeight - originaStartPointY - retreatTop - originaEndPointY;
 
     canvasPreview.width = canvasWidth;
     canvasPreview.height = canvasHeight;
 
     ctxPr.clearRect(0, 0, canvasPreview.width, canvasPreview.height);
-    ctxPr.drawImage(canvasImgPath, sliceLeftX, sliceLeftY, sliceWidth, sliceHeight, startPoint, startPoint, canvasWidth, canvasHeight);
+    ctxPr.drawImage(canvasImgPath, sliceLeftX, sliceLeftY, sliceWidth, sliceHeight, startPoint, startPoint, sliceWidth, sliceHeight);
 
 }
 
@@ -451,16 +505,4 @@ function frameOutside() {
 
 }
 
-// ctx.moveTo(startPointX + retreatLeft, startPointY + retreatTop);
-// // top
-// ctx.lineTo(canvasWidth - endPointX, startPointY + retreatTop);
-
-// //right
-// ctx.lineTo(canvasWidth - endPointX, canvasHeight - endPointY);
-
-// // bottom
-// ctx.lineTo(startPointX + retreatLeft, canvasHeight - endPointY );
-
-// //left
-// ctx.lineTo(startPointX + retreatLeft, startPointY + retreatTop);
 
