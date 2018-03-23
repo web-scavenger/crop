@@ -49,6 +49,15 @@ header #add__new--img{
     color: darkslategray;
     cursor: pointer;
 }
+.btn{
+    width: 150px;
+    height: 50px;
+    border: 2px solid firebrick;
+    background: #fff;
+    color: darkslategray;
+    cursor: pointer;
+    display: none;
+}
 
 .preview__block{
     margin-bottom: 100px;

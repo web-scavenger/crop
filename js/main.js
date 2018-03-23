@@ -23,8 +23,8 @@ var minHeight = 0;
 var percent = 5;
 var imagePercent = 0.8;
 
-var canvasWidth = this.innerWidth;
-var canvasHeight = this.innerHeight;
+var canvasWidth = window.innerWidth;
+var canvasHeight = window.innerHeight;
 var mouseDown = false;
 var moveToY;
 var moveToX;
@@ -207,22 +207,22 @@ function moveLeftLine(event) {
             ctx.drawImage(canvasImgPath, 0, 0, canvasWidth ,canvasHeight);
 
             ctx.beginPath();
-            ctx.moveTo(event.offsetX, startPointY + retreatTop);
+            ctx.moveTo(event.offsetX, startPointY);
 
-            ctx.lineTo(canvasWidth - endPointX, startPointY + retreatTop);
+            ctx.lineTo(canvasWidth - endPointX, startPointY);
 
             ctx.lineTo(canvasWidth - endPointX, canvasHeight - endPointY);
 
             ctx.lineTo(event.offsetX, canvasHeight - endPointY);
 
-            ctx.lineTo(event.offsetX, startPointY + retreatTop);
+            ctx.lineTo(event.offsetX, startPointY);
             frameOutside();
 
             ctx.stroke();
             // addOverlay();
             // putLine();
             startPointX = event.offsetX;
-            retreatLeft = 0;
+    
 
 
         }
@@ -255,7 +255,7 @@ function moveTopLine() {
             ctx.beginPath();
 
             // start
-            ctx.moveTo(startPointX + retreatLeft, startPointY + retreatTop);
+            ctx.moveTo(startPointX, startPointY);
             // top
             ctx.lineTo(canvasWidth - endPointX, startPointY + retreatTop);
             // ctx.fillRect(canvas.width - retreat - 5, startPoint + retreat -5, 10, 10);
@@ -263,10 +263,10 @@ function moveTopLine() {
             ctx.lineTo(canvasWidth - endPointX, canvasHeight - endPointY);
 
             // bottom
-            ctx.lineTo(startPointX + retreatLeft, canvasHeight - endPointY);
+            ctx.lineTo(startPointX, canvasHeight - endPointY);
 
             //left
-            ctx.lineTo(startPointX + retreatLeft, startPointY + retreatTop);
+            ctx.lineTo(startPointX , startPointY);
             frameOutside();
             // addOverlay();
             ctx.stroke();
@@ -293,7 +293,7 @@ function moveTopLine() {
 function moveRightLine() {
     canvas.onmousemove = function (event) {
 
-        if (event.offsetX < startPointX + retreatLeft + minWidth) {
+        if (event.offsetX < startPointX + minWidth) {
             ctx.closePath()
         }
         else {
@@ -308,15 +308,15 @@ function moveRightLine() {
             // start
 
             // top
-            ctx.moveTo(startPointX + retreatLeft, startPointY + retreatTop);
+            ctx.moveTo(startPointX , startPointY );
 
-            ctx.lineTo(event.offsetX - retreatRight, startPointY + retreatTop);
+            ctx.lineTo(event.offsetX, startPointY );
 
-            ctx.lineTo(event.offsetX - retreatRight, canvasHeight - endPointY);
+            ctx.lineTo(event.offsetX, canvasHeight - endPointY);
 
-            ctx.lineTo(startPointX + retreatLeft, canvasHeight - endPointY);
+            ctx.lineTo(startPointX, canvasHeight - endPointY);
 
-            ctx.lineTo(startPointX + retreatLeft, startPointY + retreatTop);
+            ctx.lineTo(startPointX, startPointY);
 
             frameOutside();
             ctx.stroke();
@@ -360,17 +360,17 @@ function moveBottomLine() {
             // start
 
             // top
-            ctx.moveTo(startPointX + retreatLeft, startPointY + retreatTop);
+            ctx.moveTo(startPointX, startPointY);
 
-            ctx.lineTo(canvasWidth - endPointX, startPointY + retreatTop);
+            ctx.lineTo(canvasWidth - endPointX, startPointY);
 
-            ctx.lineTo(canvasWidth - endPointX, event.offsetY + retreatBottom);
-
-
-            ctx.lineTo(startPointX + retreatLeft, event.offsetY - retreatBottom);
+            ctx.lineTo(canvasWidth - endPointX, event.offsetY );
 
 
-            ctx.lineTo(startPointX + retreatLeft, startPointY + retreatTop);
+            ctx.lineTo(startPointX, event.offsetY);
+
+
+            ctx.lineTo(startPointX, startPointY);
 
             frameOutside();
             ctx.stroke();
@@ -407,28 +407,13 @@ function moveCutterFrame() {
 
         moveToX = event.offsetX - startClickPointX;
         moveToY = event.offsetY - startClickPointY;
-        if (startPointX < 5) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(canvasImgPath, 0, 0, canvasWidth ,canvasHeight);
-            ctx.beginPath();
-            var sliceLeftX = startPointX;
-            var sliceLeftY = startPointY;
-            var sliceWidth = canvasWidth - startPointX - endPointX;
-            var sliceHeight = canvasHeight - startPointY - endPointY;
+       
+        if (startPointX < 5 || startPointY < 5 || endPointX < 5 || endPointY < 5) {
+            ctx.closePath();
 
-            ctx.rect(sliceLeftX, sliceLeftY, sliceWidth, sliceHeight);
-
-            frameOutside();
-            ctx.stroke();
-
-            startPointX = startPointX + 5;
-            startPointY = counterStartPointY + moveToY;
-            endPointX = counterEndPointX - moveToX;
-            endPointY = counterEndPointY - moveToY;
-
-        }
+        }   
         else {
-            console.log()
+            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(canvasImgPath, 0, 0, canvasWidth ,canvasHeight);
             ctx.beginPath();
@@ -442,11 +427,12 @@ function moveCutterFrame() {
             frameOutside();
             ctx.stroke();
 
-            startPointX = counterStartPointX + moveToX;
+            
+        }
+        startPointX = counterStartPointX + moveToX;
             startPointY = counterStartPointY + moveToY;
             endPointX = counterEndPointX - moveToX;
             endPointY = counterEndPointY - moveToY;
-        }
 
 
 
@@ -470,23 +456,44 @@ function moveCutterFrame() {
 function cutImage() {
     // startPointX = startPointX * 1.5;
     // startPointY = startPointY * 1.25;
-    var originaStartPointX = startPointX * 1.25;
-    var originaStartPointY = startPointY * 1.25;
-    var originaEndPointX = endPointX * 1.25;
-    var originaEndPointY = endPointY * 1.25;
+    // var originaStartPointX = startPointX;
+    // var originaStartPointY = startPointY;
+    // var originaEndPointX = endPointX;
+    // var originaEndPointY = endPointY;
+    var coecifX = originalImgWidth / (canvasWidth) ;
+    var coecifY = originalImgHeight / (canvasHeight);
+    console.log(coecifX, coecifY);
+
+
+    console.log(originalImgWidth,originalImgHeight, startPointX, startPointY, window.innerWidth, window.innerHeight , endPointX, endPointY)
+    
+    var sliceLeftX = ((originalImgWidth * ( Math.floor(100 * startPointX) / window.innerWidth )  ) / 100)* coecifY;
+    var sliceLeftY = ((originalImgHeight * ( Math.floor(100 * startPointY) / window.innerHeight )) / 100 ) * coecifY;
+    var sliceWidth = originalImgWidth - sliceLeftX - ( Math.floor(originalImgWidth * ( (100 * endPointX ) / window.innerWidth ) / 100) * coecifY);
+    var sliceHeight = originalImgHeight - sliceLeftY - ( Math.floor(originalImgHeight * ( (100 * endPointY ) / window.innerHeight ) / 100)  * coecifY);
+    // console.log(sliceLeftX, sliceLeftY, sliceWidth, sliceHeight);
+   
+    canvasPreview.width = sliceWidth;
+    canvasPreview.height = sliceHeight;
+    // console.log(canvasPreview.width, window.innerWidth)
+    // if(canvasPreview.width < sliceWidth || canvasPreview.height < sliceHeight){
+    //     ctxPr.clearRect(0, 0, canvasPreview.width, canvasPreview.height);
+    //     ctxPr.drawImage(canvasImgPath, sliceLeftX, sliceLeftY, sliceWidth, sliceHeight, startPoint, startPoint, canvasWidth, canvasHeight);
+    // } else{
+        ctxPr.clearRect(0, 0, canvasPreview.width, canvasPreview.height);
+        ctxPr.drawImage(canvasImgPath, sliceLeftX, sliceLeftY, sliceWidth, sliceHeight, startPoint, startPoint, sliceWidth, sliceHeight);
+        var prUrl = canvasPreview.toDataURL();
+        console.log(prUrl);
+        document.querySelector('.btn').style.display = 'block';
+        document.getElementById('cut__image__url').setAttribute('href', prUrl);
+        canvasPreview.width = 500;
+        canvasPreview.height = 300;
+        
+        ctxPr.clearRect(0, 0, canvasPreview.width, canvasPreview.height);
+        ctxPr.drawImage(canvasImgPath, sliceLeftX, sliceLeftY, sliceWidth, sliceHeight, startPoint, startPoint, canvasPreview.width, canvasPreview.height);
+    // }
 
     
-    
-    var sliceLeftX = originaStartPointX + retreatLeft;
-    var sliceLeftY = originaStartPointY + retreatTop;
-    var sliceWidth = originalImgWidth - retreatLeft - originaStartPointX - originaEndPointX;
-    var sliceHeight = originalImgHeight - originaStartPointY - retreatTop - originaEndPointY;
-
-    canvasPreview.width = canvasWidth;
-    canvasPreview.height = canvasHeight;
-
-    ctxPr.clearRect(0, 0, canvasPreview.width, canvasPreview.height);
-    ctxPr.drawImage(canvasImgPath, sliceLeftX, sliceLeftY, sliceWidth, sliceHeight, startPoint, startPoint, sliceWidth, sliceHeight);
 
 }
 
@@ -495,13 +502,13 @@ function frameOutside() {
     ctx.fillStyle = "#22222285";
 
     // top
-    ctx.fillRect(startPoint, startPoint, canvasWidth, startPointY + retreatTop);
+    ctx.fillRect(startPoint, startPoint, canvasWidth, startPointY);
     // left
-    ctx.fillRect(startPoint, retreatTop + startPointY, startPointX + retreatLeft, canvasHeight);
+    ctx.fillRect(startPoint,  startPointY, startPointX , canvasHeight);
     //bottom
-    ctx.fillRect(retreatLeft + startPointX, canvasHeight - endPointY, canvasWidth, endPointY);
+    ctx.fillRect(startPointX, canvasHeight - endPointY, canvasWidth, endPointY);
     // right
-    ctx.fillRect(canvasWidth - endPointX, retreatTop + startPointY, retreatRight + endPointX, canvasHeight - retreatTop - startPointY - endPointY);
+    ctx.fillRect(canvasWidth - endPointX, startPointY, endPointX, canvasHeight - startPointY - endPointY);
 
 }
 
