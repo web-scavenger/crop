@@ -7,11 +7,11 @@ var ctx = canvas.getContext('2d');
 var ctxPr = canvasPreview.getContext('2d');
 var cutButton = document.querySelector('.cut__btn');
 var canvasImgPath; // new img path for canvas
-var startPointX = 80; // start canvas position X
-var startPointY = 80; // start canvas position Y
+var startPointX = 0; // start canvas position X
+var startPointY = 0; // start canvas position Y
 var startPoint = 0;
-var endPointX = 80; // 
-var endPointY = 80; //
+var endPointX = 0; // 
+var endPointY = 0; //
 var retreat = 0;
 var retreatTop = 0; // retreat for crop frame
 var retreatLeft = 0; // retreat for crop frame
@@ -21,7 +21,8 @@ var retreatBottom = 0; // retreat for crop frame
 var minWidth = 0;
 var minHeight = 0;
 var percent = 5;
-var imagePercent = 0.8;
+var imagePercent = 0.55;
+var imagePercentHeight = 0.6;
 
 var canvasWidth = window.innerWidth;
 var canvasHeight = window.innerHeight;
@@ -39,11 +40,12 @@ var windowHeight = 0;
 
 cutButton.addEventListener('click', cutImage);
 
-window.addEventListener('resize', function(){
-    canvasWidth = this.innerWidth;
-    canvasHeight = this.innerHeight;
-    frameCutter(canvasImgPath, canvasHeight, canvasWidth);
-})
+// window.addEventListener('resize', function(){
+//     canvasWidth = this.innerWidth;
+//     canvasHeight = this.innerHeight;
+//     console.log( canvasHeight, canvasWidth)
+//     frameCutter(canvasImgPath, canvasHeight, canvasWidth);
+// })
 
 
 addNewImgBtn.addEventListener("change", downloadNewImg);
@@ -74,37 +76,47 @@ function downloadNewImg(event) {
 
 //draw image to canvas & draw crop frame
 function frameCutter(canvasImgPath, height, width) {
+
     
     originalImgWidth = width;
     originalImgHeight = height;
-    // canvas.width = width;
-    // canvas.height = height;
-    canvas.width = canvasWidth * imagePercent;
-    canvas.height = canvasHeight * imagePercent;
+    
+    canvas.width = originalImgWidth;
+    canvas.height = originalImgHeight;
+
+    canvas.style.width = '100%';
+    canvas.style.height = 'auto';
+    
+    
+    
     canvasHeight = canvas.height;
     canvasWidth = canvas.width;
     minHeight = canvas.height / percent;
     minWidth = canvas.width / percent;
-    console.log(canvasWidth, canvasHeight)
+    console.log(canvasWidth, canvasHeight, canvas.style.width, canvas.width)
+    
     // test
     // canvasHeight = height;
     // canvasWidth = width;
-    startPointX = 80; // start canvas position X
-    startPointY = 80; // start canvas position Y
 
-    endPointX = 80; // 
-    endPointY = 80; //
+    startPointX = canvasWidth*0.05; // start canvas position X
+    startPointY = canvasWidth*0.05; // start canvas position Y
+
+    endPointX = canvasWidth*0.05; // 
+    endPointY = canvasWidth*0.05; //
 
 
 
 
-    ctx.drawImage(canvasImgPath, 0, 0, canvasWidth ,canvasHeight);
+    ctx.drawImage(canvasImgPath, 0, 0, originalImgWidth , originalImgHeight);
 
     ctx.beginPath();
 
 
     // start
+    ctx.fillStyle = '#0893d2';
     ctx.moveTo(startPointX, startPointY);
+    ctx.fillRect(startPointX, startPointY, 10, 10);
     // top
     ctx.lineTo(canvas.width - endPointY, startPointY);
 
@@ -118,15 +130,28 @@ function frameCutter(canvasImgPath, height, width) {
     ctx.lineTo(startPointX + retreat, startPointY + retreat);
 
     frameOutside()
-    ctx.restore();
-    ctx.setLineDash([10, 15]);
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 3;
+    // ctx.restore();
+    ctx.setLineDash([7, 5]);
+    ctx.fillStyle = '#0893d2';
+    ctx.strokeStyle = '#0893d2';
+    ctx.lineWidth = 5;
     ctx.stroke();
+
+    // ctx.clip();
+
+    // ctx.beginPath();
+    // ctx.lineTo(startPointX,  5);
+
+    // ctx.strokeStyle = '#0893d2';
+    // ctx.lineWidth = 3;
+    // ctx.stroke();
+
    
     putLine();
     // addOverlay();
-
+    console.log( startPointX, startPointY, endPointY, endPointX);
+    console.log(document.getElementById('test_id').clientHeight);
+    console.log(document.getElementById('test_id').offsetWidth);
 
 
 }
@@ -137,8 +162,10 @@ function putLine() {
 
 
     canvas.addEventListener('mousemove', function (event) {
+        // console.log(event.offsetX, event.offsetY);
+        
 
-        if (event.offsetX > startPointX + retreatLeft - 4 && event.offsetX < startPointX + retreatLeft + 4 && event.offsetY > startPointY + retreatLeft && event.offsetY < canvasHeight - retreatLeft) {
+        if (event.offsetX > startPointX - 6 && event.offsetX < startPointX + 6 && event.offsetY > startPointY + 6  && event.offsetY < canvasHeight - endPointY - 6) {
 
 
             canvas.style.cursor = 'e-resize';
@@ -148,14 +175,31 @@ function putLine() {
                 canvas.addEventListener('mousedown', moveLeftLine, false);
             }
 
-        } else if (event.offsetY > startPointY + retreatTop - 4 && event.offsetY < startPointY + retreatTop + 4 && event.offsetX > startPointX + retreatTop && event.offsetX < canvasWidth) {
+        }
+        else if (event.offsetY > startPointY - 2 && event.offsetY < startPointY + 2 && event.offsetX > startPointX - 4 && event.offsetX < startPointX + 4) {
+          
+            canvas.style.cursor = 'nw-resize';
+            event.preventDefault();
+            mouseDown = true;
+            if (mouseDown) {
+                canvas.addEventListener('mousedown', moveTopLeftLine, false);
+            }
+        } else if (event.offsetY > startPointY - 6 && event.offsetY < startPointY + 6 && event.offsetX > startPointX + 4 && event.offsetX < canvasWidth - endPointX - 6) {
             canvas.style.cursor = 'n-resize';
             event.preventDefault();
             mouseDown = true;
             if (mouseDown) {
                 canvas.addEventListener('mousedown', moveTopLine, false);
             }
-        } else if (event.offsetX > canvasWidth - endPointX - 4 && event.offsetX < canvasWidth - endPointX + 4 && event.offsetY > startPointY && event.offsetY < canvasHeight - 80) {
+        } else if (event.offsetY > startPointY - 4 && event.offsetY <  startPointY + 4 && event.offsetX >  canvasWidth - endPointX - 4 && event.offsetX < canvasWidth - endPointX + 4) {
+            
+            canvas.style.cursor = 'sw-resize';
+            event.preventDefault();
+            mouseDown = true;
+            if (mouseDown) {
+                canvas.addEventListener('mousedown', moveTopRightLine, false);
+            }
+        } else if (event.offsetX > canvasWidth - endPointX - 4 && event.offsetX < canvasWidth - endPointX + 4 && event.offsetY > startPointY + 6 && event.offsetY < canvasHeight - endPointY - 6) {
             canvas.style.cursor = 'w-resize';
             event.preventDefault();
             mouseDown = true;
@@ -163,7 +207,16 @@ function putLine() {
                 canvas.addEventListener('mousedown', moveRightLine, false);
             }
 
-        } else if (event.offsetY > canvasHeight - endPointY - 4 && event.offsetY < canvasHeight - endPointY + 4 && event.offsetX < canvasWidth - 80 && event.offsetX > startPointX) {
+        } else if (event.offsetX > canvasWidth - endPointX - 4 && event.offsetX < canvasWidth - endPointX + 4 && event.offsetY > canvasHeight - endPointY + 6 && event.offsetY < canvasHeight  - endPointY - 6) {
+            console.log('true');
+            canvas.style.cursor = 'se-resize';
+            event.preventDefault();
+            mouseDown = true;
+            if (mouseDown) {
+                canvas.addEventListener('mousedown', moveRightBottomLine, false);
+            }
+
+        } else if (event.offsetY > canvasHeight - endPointY - 4 && event.offsetY < canvasHeight - endPointY + 4 && event.offsetX < canvasWidth - endPointX && event.offsetX > startPointX) {
             canvas.style.cursor = 's-resize';
             event.preventDefault();
             mouseDown = true;
@@ -183,7 +236,9 @@ function putLine() {
             canvas.style.cursor = 'default';
             mouseDown = false;
             canvas.removeEventListener('mousedown', moveLeftLine);
+            canvas.removeEventListener('mousedown', moveTopLeftLine);
             canvas.removeEventListener('mousedown', moveTopLine);
+            canvas.removeEventListener('mousedown', moveTopRightLine);
             canvas.removeEventListener('mousedown', moveRightLine);
             canvas.removeEventListener('mousedown', moveBottomLine);
             canvas.removeEventListener('mousedown', moveCutterFrame);
@@ -208,7 +263,7 @@ function moveLeftLine(event) {
 
             ctx.beginPath();
             ctx.moveTo(event.offsetX, startPointY);
-
+          
             ctx.lineTo(canvasWidth - endPointX, startPointY);
 
             ctx.lineTo(canvasWidth - endPointX, canvasHeight - endPointY);
@@ -218,6 +273,7 @@ function moveLeftLine(event) {
             ctx.lineTo(event.offsetX, startPointY);
             frameOutside();
 
+            
             ctx.stroke();
             // addOverlay();
             // putLine();
@@ -235,6 +291,55 @@ function moveLeftLine(event) {
         ctx.closePath();
         mouseDown = false;
         canvas.removeEventListener('mousedown', moveLeftLine);
+
+    }
+}
+
+function moveTopLeftLine(event) {
+    // canvas.style.cursor = 'e-resize';
+    canvas.onmousemove = function (event) {
+
+        if (event.offsetX > canvasWidth - endPointX - minWidth) {
+            ctx.closePath()
+        }
+        else {
+            canvas.style.cursor = 'nw-resize';
+            // leftRetreat = event.offsetX - retreat;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(canvasImgPath, 0, 0, canvasWidth ,canvasHeight);
+
+            ctx.beginPath();
+            ctx.moveTo(event.offsetX, event.offsetY);
+          
+            ctx.lineTo(canvasWidth - endPointX, event.offsetY);
+
+            ctx.lineTo(canvasWidth - endPointX, canvasHeight - endPointY);
+
+            ctx.lineTo(event.offsetX, canvasHeight - endPointY);
+
+            ctx.lineTo(event.offsetX, event.offsetY);
+            frameOutside();
+
+            
+            ctx.stroke();
+            // addOverlay();
+            // putLine();
+            startPointX = event.offsetX;
+            startPointY = event.offsetY;
+    
+
+
+        }
+
+    }
+
+    canvas.onmouseup = function () {
+        canvas.style.cursor = 'default';
+        canvas.onmousemove = null;
+        ctx.closePath();
+        mouseDown = false;
+        canvas.removeEventListener('mousedown', moveTopLeftLine);
 
     }
 }
@@ -286,6 +391,58 @@ function moveTopLine() {
         ctx.closePath();
         mouseDown = false;
         canvas.removeEventListener('mousedown', moveLeftLine);
+
+    }
+}
+
+function moveTopRightLine() {
+    canvas.onmousemove = function (event) {
+
+        if (event.offsetY > canvasHeight - endPointY - minHeight) {
+            ctx.closePath()
+        }
+        else {
+            canvas.style.cursor = 'sw-resize';
+            // topRetreat = event.offsetX - retreat;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.drawImage(canvasImgPath, 0, 0, canvasWidth ,canvasHeight);
+
+            ctx.beginPath();
+
+            // start
+            ctx.moveTo(startPointX, startPointY);
+            // top
+            ctx.lineTo(canvasWidth - endPointX, startPointY + retreatTop);
+            // ctx.fillRect(canvas.width - retreat - 5, startPoint + retreat -5, 10, 10);
+            //right
+            ctx.lineTo(canvasWidth - endPointX, canvasHeight - endPointY);
+
+            // bottom
+            ctx.lineTo(startPointX, canvasHeight - endPointY);
+
+            //left
+            ctx.lineTo(startPointX , startPointY);
+            frameOutside();
+            // addOverlay();
+            ctx.stroke();
+            // putLine();
+            startPointY = event.offsetY;
+            endPointX = canvasWidth - event.offsetX;
+            retreatTop = 0;
+
+
+        }
+
+
+    }
+
+    canvas.onmouseup = function () {
+        canvas.style.cursor = 'default';
+        canvas.onmousemove = null;
+        ctx.closePath();
+        mouseDown = false;
+        canvas.removeEventListener('mousedown', moveTopRightLine);
 
     }
 }
@@ -462,15 +619,15 @@ function cutImage() {
     // var originaEndPointY = endPointY;
     var coecifX = originalImgWidth / (canvasWidth) ;
     var coecifY = originalImgHeight / (canvasHeight);
-    console.log(coecifX, coecifY);
+    // console.log(coecifX, coecifY);
 
 
-    console.log(originalImgWidth,originalImgHeight, startPointX, startPointY, window.innerWidth, window.innerHeight , endPointX, endPointY)
+    // console.log(originalImgWidth,originalImgHeight, startPointX, startPointY, window.innerWidth, window.innerHeight , endPointX, endPointY)
     
-    var sliceLeftX = ((originalImgWidth * ( Math.floor(100 * startPointX) / window.innerWidth )  ) / 100)* coecifY;
-    var sliceLeftY = ((originalImgHeight * ( Math.floor(100 * startPointY) / window.innerHeight )) / 100 ) * coecifY;
-    var sliceWidth = originalImgWidth - sliceLeftX - ( Math.floor(originalImgWidth * ( (100 * endPointX ) / window.innerWidth ) / 100) * coecifY);
-    var sliceHeight = originalImgHeight - sliceLeftY - ( Math.floor(originalImgHeight * ( (100 * endPointY ) / window.innerHeight ) / 100)  * coecifY);
+    var sliceLeftX = ((originalImgWidth * ( Math.floor(100 * startPointX) / canvasWidth )  ) / 100) ;
+    var sliceLeftY = ((originalImgHeight * ( Math.floor(100 * startPointY) / canvasHeight )) / 100 ) ;
+    var sliceWidth = originalImgWidth - sliceLeftX - ( Math.floor(originalImgWidth * ( (100 * endPointX ) / canvasWidth ) / 100) );
+    var sliceHeight = originalImgHeight - sliceLeftY - ( Math.floor(originalImgHeight * ( (100 * endPointY ) / canvasHeight ) / 100) );
     // console.log(sliceLeftX, sliceLeftY, sliceWidth, sliceHeight);
    
     canvasPreview.width = sliceWidth;
@@ -483,15 +640,33 @@ function cutImage() {
         ctxPr.clearRect(0, 0, canvasPreview.width, canvasPreview.height);
         ctxPr.drawImage(canvasImgPath, sliceLeftX, sliceLeftY, sliceWidth, sliceHeight, startPoint, startPoint, sliceWidth, sliceHeight);
         var prUrl = canvasPreview.toDataURL();
-        console.log(prUrl);
+        // console.log(prUrl);
         document.querySelector('.btn').style.display = 'block';
         document.getElementById('cut__image__url').setAttribute('href', prUrl);
-        canvasPreview.width = 500;
-        canvasPreview.height = 300;
+        console.log(canvasWidth, canvasHeight)
+        if(window.innerHeight > window.innerWidth){
+            canvasPreview.width = canvasWidth;
+            canvasPreview.height = canvasHeight;
+        }
+        else{
+            canvasPreview.width = 500;
+            canvasPreview.height = 300;
+        }
         
-        ctxPr.clearRect(0, 0, canvasPreview.width, canvasPreview.height);
-        ctxPr.drawImage(canvasImgPath, sliceLeftX, sliceLeftY, sliceWidth, sliceHeight, startPoint, startPoint, canvasPreview.width, canvasPreview.height);
+        
+       
     // }
+       
+        var imageLegs = new Image();
+        
+        imageLegs.onload = function () {
+            ctxPr.clearRect(0, 0, canvasPreview.width, canvasPreview.height);
+            ctxPr.drawImage(canvasImgPath, sliceLeftX, sliceLeftY, sliceWidth, sliceHeight, startPoint, startPoint, canvasPreview.width, canvasPreview.height);
+            ctxPr.drawImage(imageLegs, 0, 0, canvasWidth, 20);
+           
+        }
+        imageLegs.src = 'sticks.png'
+        
 
     
 
