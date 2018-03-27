@@ -10,7 +10,17 @@
 <body>
     <header>
         <div class="container">
-            <input type="file" name="" id="add__new--img">
+            
+            <div class="file-upload">
+                <label>
+                     <input type="file" name="file" id="add__new--img">
+                     <span>File</span>
+                </label>
+           </div>
+           <button class="preview__btn" id="preview__btn">Preview</button>
+           <div class="btn">
+                <a href=" " class="download__btn" id="cut__image__url" download>Download</a>
+           </div>
         </div>
     </header>
 
@@ -24,9 +34,9 @@
                     Your browser does not support the canvas element.
                 </canvas>
             </div>
-            <button class="cut__btn">Cut this image</button>
+            <!-- <button class="cut__btn">Cut this image</button> -->
             
-                 <a href=" " class="btn" id="cut__image__url" download>Download image</a>
+                 
             
             
         </div>
@@ -34,12 +44,26 @@
 
     <section class="preview__block">
         <div class="container">
+
+                           <div class="btn download__btn--block">
+                                <a href=" " class="download__btn " id="prev__cut__image__url" download>Download</a>
+                           </div>
+                           <div class="close__btn">
+                               <button class="back__btn">
+                                    Back to changes
+                               </button>
+                              
+                           </div>
+                        
             <canvas id="canvas__preview">
                 Your browser does not support the canvas element.
             </canvas>
         </div>
     </section>
-    <canvas id='overlay_canvas'></canvas>
+
+    <img src="left_stick.png" alt="" id='left_stick'>
+    
+    
 
     <script src="js/main.js"></script>
 </body>
