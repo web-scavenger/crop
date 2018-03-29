@@ -25,6 +25,9 @@ var percent = 5;
 var imagePercent = 0.55;
 var imagePercentHeight = 0.6;
 
+var pointRect; // frame points rects size
+var lineWidth; // frame width
+
 var canvasWidth = window.innerWidth;
 var canvasHeight = window.innerHeight;
 var mouseDown = false;
@@ -40,13 +43,6 @@ var compress_canvas_height;
 
 
 cutButton.addEventListener('click', cutImage);
-
-// window.addEventListener('resize', function(){
-//     canvasWidth = this.innerWidth;
-//     canvasHeight = this.innerHeight;
-//     console.log( canvasHeight, canvasWidth)
-//     frameCutter(canvasImgPath, canvasHeight, canvasWidth);
-// })
 
 
 addNewImgBtn.addEventListener("change", downloadNewImg);
@@ -78,6 +74,7 @@ function downloadNewImg(event) {
 //draw image to canvas & draw crop frame
 function frameCutter(canvasImgPath, height, width) {
 
+    document.getElementById('preview__btn').removeAttribute('disabled');
 
     originalImgWidth = width;
     originalImgHeight = height;
@@ -88,7 +85,8 @@ function frameCutter(canvasImgPath, height, width) {
     canvas.style.width = '100%';
     canvas.style.height = 'auto';
 
-
+    pointRect = originalImgWidth / 50;
+    lineWidth = originalImgWidth / 250;
 
     canvasHeight = canvas.height;
     canvasWidth = canvas.width;
@@ -128,11 +126,11 @@ function frameCutter(canvasImgPath, height, width) {
     ctx.lineTo(startPointX, startPointY);
 
     frameOutside()
-    // ctx.restore();
+
     ctx.setLineDash([7, 5]);
     ctx.fillStyle = '#0893d2';
     ctx.strokeStyle = '#0893d2';
-    ctx.lineWidth = 7;
+    ctx.lineWidth = lineWidth;
     ctx.stroke();
 
 
@@ -141,12 +139,13 @@ function frameCutter(canvasImgPath, height, width) {
     console.log((canvasWidth - startPointX - startPointX) / 2)
 
     ctx.fillStyle = '#0893d2';
-    ctx.fillRect(startPointX - 20, startPointY - 20, 40, 40);
-    ctx.fillRect(canvas.width - endPointY - 20, startPointY - 20, 40, 40);
-    ctx.fillRect(canvas.width - endPointX - 20, canvas.height - endPointY - 20, 40, 40);
-    ctx.fillRect(startPointX - 20, canvas.height - endPointX - 20, 40, 40);
+    ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+    ctx.fillRect(canvas.width - endPointY - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+    ctx.fillRect(canvas.width - endPointX - pointRect / 2, canvas.height - endPointY - pointRect / 2, pointRect, pointRect);
+    ctx.fillRect(startPointX - pointRect / 2, canvas.height - endPointX - pointRect / 2, pointRect, pointRect);
 
-    ctx.fillRect((canvasWidth - startPointX - startPointX) / 2, startPointY - 10, 40, 20);
+
+
     
     compress_canvas_width = document.getElementById('canvas').offsetWidth;
     compress_canvas_height = document.getElementById('canvas').offsetHeight;
@@ -286,10 +285,10 @@ function moveLeftLine(event) {
             ctx.stroke();
 
             ctx.fillStyle = '#0893d2';
-            ctx.fillRect(eX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(canvasWidth - endPointX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(canvasWidth - endPointX - 20, canvasHeight - endPointY - 20, 40, 40);
-            ctx.fillRect(eX - 20, canvasHeight - endPointY - 20, 40, 40);
+            ctx.fillRect(eX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(eX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
 
             startPointX = eX;
 
@@ -336,15 +335,13 @@ function moveTopLeftLine(event) {
             ctx.stroke();
 
             ctx.fillStyle = '#0893d2';
-            ctx.fillRect(eX - 20, eY - 20, 40, 40);
-            ctx.fillRect(canvasWidth - endPointX - 20, eY - 20, 40, 40);
-            ctx.fillRect(canvasWidth - endPointX - 20, canvasHeight - endPointY - 20, 40, 40);
-            ctx.fillRect(eX - 20, canvasHeight - endPointY - 20, 40, 40);
+            ctx.fillRect(eX - pointRect / 2, eY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, eY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(eX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
 
             startPointX = eX;
             startPointY = eY;
-
-
 
         }
 
@@ -389,18 +386,16 @@ function moveTopLine() {
             //left
             ctx.lineTo(startPointX, startPointY);
             frameOutside();
-            // addOverlay();
+
             ctx.stroke();
-            // putLine();
+
             ctx.fillStyle = '#0893d2';
-            ctx.fillRect(startPointX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(canvasWidth - endPointX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(canvasWidth - endPointX - 20, canvasHeight - endPointY - 20, 40, 40);
-            ctx.fillRect(startPointX - 20, canvasHeight - endPointY - 20, 40, 40);
+            ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(startPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
 
             startPointY = eY;
-
-
 
         }
 
@@ -441,26 +436,23 @@ function moveTopRightLine() {
             //right
             ctx.lineTo(canvasWidth - endPointX, canvasHeight - endPointY);
 
-            // bottom
+
             ctx.lineTo(startPointX, canvasHeight - endPointY);
 
-            //left
+
             ctx.lineTo(startPointX, startPointY);
             frameOutside();
-            // addOverlay();
+
             ctx.stroke();
-            // putLine();
 
             ctx.fillStyle = '#0893d2';
-            ctx.fillRect(startPointX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(canvasWidth - endPointX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(canvasWidth - endPointX - 20, canvasHeight - endPointY - 20, 40, 40);
-            ctx.fillRect(startPointX - 20, canvasHeight - endPointY - 20, 40, 40);
+            ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(startPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
 
             startPointY = eY;
             endPointX = canvasWidth - eX;
-
-
 
         }
 
@@ -508,10 +500,10 @@ function moveRightLine() {
             ctx.stroke();
 
             ctx.fillStyle = '#0893d2';
-            ctx.fillRect(startPointX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(eX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(eX - 20, canvasHeight - endPointY - 20, 40, 40);
-            ctx.fillRect(startPointX - 20, canvasHeight - endPointY - 20, 40, 40);
+            ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(eX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(eX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(startPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
 
             endPointX = canvasWidth - eX;
 
@@ -547,9 +539,6 @@ function moveRightBottomLine() {
 
             ctx.beginPath();
 
-            // start
-
-            // top
             ctx.moveTo(startPointX, startPointY);
 
             ctx.lineTo(eX, startPointY);
@@ -566,10 +555,10 @@ function moveRightBottomLine() {
             ctx.stroke();
 
             ctx.fillStyle = '#0893d2';
-            ctx.fillRect(startPointX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(eX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(eX - 20, eY - 20, 40, 40);
-            ctx.fillRect(startPointX - 20, eY - 20, 40, 40);
+            ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(eX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(eX - pointRect / 2, eY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(startPointX - pointRect / 2, eY - pointRect / 2, pointRect, pointRect);
 
             endPointX = canvasWidth - eX;
             endPointY = canvasHeight - eY;
@@ -603,9 +592,6 @@ function moveBottomLine() {
 
             ctx.beginPath();
 
-            // start
-
-            // top
             ctx.moveTo(startPointX, startPointY);
 
             ctx.lineTo(canvasWidth - endPointX, startPointY);
@@ -615,17 +601,16 @@ function moveBottomLine() {
 
             ctx.lineTo(startPointX, eY);
 
-
             ctx.lineTo(startPointX, startPointY);
 
             frameOutside();
             ctx.stroke();
 
             ctx.fillStyle = '#0893d2';
-            ctx.fillRect(startPointX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(canvasWidth - endPointX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(canvasWidth - endPointX - 20, eY - 20, 40, 40);
-            ctx.fillRect(startPointX - 20, eY - 20, 40, 40);
+            ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, eY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(startPointX - pointRect / 2, eY - pointRect / 2, pointRect, pointRect);
 
             endPointY = canvasHeight - eY;
 
@@ -672,10 +657,10 @@ function moveLeftBottomLine(event) {
             ctx.stroke();
 
             ctx.fillStyle = '#0893d2';
-            ctx.fillRect(eX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(canvasWidth - endPointX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(canvasWidth - endPointX - 20, canvasHeight - endPointY - 20, 40, 40);
-            ctx.fillRect(eX - 20, canvasHeight - endPointY - 20, 40, 40);
+            ctx.fillRect(eX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(eX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
 
             startPointX = eX;
             endPointY = canvasHeight - eY;
@@ -734,10 +719,10 @@ function moveCutterFrame() {
             ctx.stroke();
 
             ctx.fillStyle = '#0893d2';
-            ctx.fillRect(startPointX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(canvasWidth - endPointX - 20, startPointY - 20, 40, 40);
-            ctx.fillRect(canvasWidth - endPointX - 20, canvasHeight - endPointY - 20, 40, 40);
-            ctx.fillRect(startPointX - 20, canvasHeight - endPointY - 20, 40, 40);
+            ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(startPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
 
 
         }
@@ -781,17 +766,6 @@ function cutImage() {
     canvasPreview.style.width = '100%';
     canvasPreview.style.height = 'auto';
 
-    ctxPr.clearRect(0, 0, canvasPreview.width, canvasPreview.height);
-    ctxPr.drawImage(canvasImgPath, sliceLeftX, sliceLeftY, sliceWidth, sliceHeight, startPoint, startPoint, sliceWidth, sliceHeight);
-    var prUrl = canvasPreview.toDataURL();
-    document.querySelector('.download__btn--block').style.display = 'block';
-        document.getElementById('prev__cut__image__url').setAttribute('href', prUrl);
-    
-
-    
-
-    // canvasPreview.width = compress_canvas_width;
-    // canvasPreview.height = compress_canvas_height;
 
     var imageRightLegUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAVCAYAAABVAo5cAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFwmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDIgNzkuMTYwOTI0LCAyMDE3LzA3LzEzLTAxOjA2OjM5ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgKFdpbmRvd3MpIiB4bXA6Q3JlYXRlRGF0ZT0iMjAxOC0wMy0yN1QxMDo1MTo1MCswMzowMCIgeG1wOk1ldGFkYXRhRGF0ZT0iMjAxOC0wMy0yN1QxMDo1MTo1MCswMzowMCIgeG1wOk1vZGlmeURhdGU9IjIwMTgtMDMtMjdUMTA6NTE6NTArMDM6MDAiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MThkYmZjNTktODlhNC0wZTRjLTljOWItMmI3M2FiOTE1NjY5IiB4bXBNTTpEb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6NGU5NjYwY2QtNjBlNS00MDQyLTg4NmYtZGFh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';
     var imageLeftLegUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACUAAAAVCAYAAADB5CeuAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFwmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDIgNzkuMTYwOTI0LCAyMDE3LzA3LzEzLTAxOjA2OjM5ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgKFdpbmRvd3MpIiB4bXA6Q3JlYXRlRGF0ZT0iMjAxOC0wMy0yN1QxMDo1NjoyOCswMzowMCIgeG1wOk1ldGFkYXRhRGF0ZT0iMjAxOC0wMy0yN1QxMDo1NjoyOCswMzowMCIgeG1wOk1vZGlmeURhdGU9IjIwMTgtMDMtMjdUMTA6NTY6MjgrMDM6MDAiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6ZTQ2ODZhNjAtNjgwYy1iMzQzLTg1ODktODQzYzM3MzYxODMxIiB4bXBNTTpEb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6N2YzYTlmNzYtYWRlZC03YzQ1LTgzNzQtYjdh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';
@@ -803,7 +777,7 @@ function cutImage() {
     imageRightLeg.src = imageRightLegUrl;
 
    
-
+    console.log(canvasPreview.width, canvasPreview.height, sliceWidth, sliceHeight);
 
     imageLeftLeg.onload = function () {
         ctxPr.clearRect(0, 0, canvasPreview.width, canvasPreview.height);
@@ -811,13 +785,11 @@ function cutImage() {
 
         ctxPr.drawImage(imageRightLeg, sliceWidth * 0.2, sliceHeight - 20);
         ctxPr.drawImage(imageLeftLeg, sliceWidth - sliceWidth * 0.2, sliceHeight - 20);
-        var prUrl = canvasPreview.toDataURL();
+        var prUrl = canvasPreview.toDataURL("image/jpeg");
 
-        // document.querySelector('.btn').style.display = 'block';
         document.querySelector('.download__btn--block').style.display = 'block';
         document.getElementById('prev__cut__image__url').setAttribute('href', prUrl);
-        // document.getElementById('cut__image__url').setAttribute('href', prUrl);
-        // console.log(prUrl)
+
     }
 
 

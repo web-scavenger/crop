@@ -44,12 +44,13 @@ header{
     cursor: pointer;
 }
 .file-upload span {
-    line-height: 36px; /* Делаем вертикальное выравнивание текста, который написан на кнопке */
+    line-height: 38px; /* Делаем вертикальное выравнивание текста, который написан на кнопке */
 }
 
 .preview__btn{
     float: left;
     width: 100px;
+    font-size: 16px;
     background: #0893d2;
     border-radius: 25px;
     margin: 0 10px;
@@ -132,8 +133,8 @@ header{
 
 .back__btn{
     float: left;
-    width: 200px;
-    
+    width: 165px;
+    font-size: 16px;
     background: #0893d2;
     border-radius: 25px;
     margin: 0 10px;
@@ -147,4 +148,16 @@ header{
 }
 .download__btn--block{
     margin-top: 20px;
+}
+
+@media screen and (max-width : 769px){
+    .container{
+        width: 90%;
+        margin: 0 5%;
+        overflow: hidden;
+        padding: 0px 15px;
+    }
+    .img__block .img__canvas{
+        padding: 0px 15px;
+    }
 }
