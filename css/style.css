@@ -111,12 +111,11 @@ header{
     color: darkslategray;
     cursor: pointer;
 }
-.btn{
+/* .btn{
     float: left;
-    
     cursor: pointer;
     display: none;
-}
+} */
 
 .preview__block{
     background: #fff;
@@ -138,7 +137,7 @@ header{
     background: #0893d2;
     border-radius: 25px;
     margin: 0 10px;
-    margin-top: 20px;
+    /* margin-top: 20px; */
     padding: 10px 15px;
     cursor: pointer;
     font-family: Arial, Helvetica, sans-serif;
