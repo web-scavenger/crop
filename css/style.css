@@ -35,16 +35,16 @@ header{
     background: #0786c0;
 }
 .file-upload input[type="file"]{
-   display: none; /* Обязательно скрываем настоящий Input File */
+   display: none;
 }
 .file-upload label {
 
-    padding: 10px 15px;
+    padding: 10px 30px;
     /* width: 100%; */
     cursor: pointer;
 }
 .file-upload span {
-    line-height: 38px; /* Делаем вертикальное выравнивание текста, который написан на кнопке */
+    line-height: 38px; 
 }
 
 .preview__btn{
@@ -111,11 +111,7 @@ header{
     color: darkslategray;
     cursor: pointer;
 }
-/* .btn{
-    float: left;
-    cursor: pointer;
-    display: none;
-} */
+
 
 .preview__block{
     background: #fff;
