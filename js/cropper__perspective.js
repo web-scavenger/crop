@@ -18,6 +18,17 @@ var startPoint = 0;
 var endPointX = 0; // 
 var endPointY = 0; //
 
+var leftPointX;
+var leftPointY;
+var rightPointX;
+var rightPointY;
+var rightBottomPointX;
+var rightBottomPointY;
+var leftBottomPointX;
+var leftBottomPointY;
+
+
+
 // min size for cutter frame. 20% of dwnld img
 var minWidth = 0;
 var minHeight = 0;
@@ -104,12 +115,25 @@ function frameCutter(canvasImgPath, height, width) {
     endPointX = canvasWidth * 0.05; // 
     endPointY = canvasWidth * 0.05; //
 
+    var retreat = canvasWidth * 0.05;
+
+    leftBottomPointX = retreat;
+    leftBottomPointY = retreat;
+
+    leftPointX = retreat;
+    leftPointY = retreat;
+
+    rightPointX = retreat;
+    rightPointY = retreat;
+
+    rightBottomPointX = retreat;
+    rightBottomPointY = retreat;
+
+
 
 
     ctx.drawImage(canvasImgPath, 0, 0, originalImgWidth, originalImgHeight);
-    
 
-    
 
     ctx.beginPath();
 
@@ -117,21 +141,21 @@ function frameCutter(canvasImgPath, height, width) {
     // start
 
     ctx.fillStyle = '#0893d2';
-    ctx.moveTo(startPointX, startPointY);
+    ctx.moveTo(leftPointX, leftPointY);
 
     // top
-    ctx.lineTo(canvas.width - endPointY, startPointY);
+    ctx.lineTo(canvas.width - rightPointX, rightPointY);
 
     //right
-    ctx.lineTo(canvas.width - endPointX, canvas.height - endPointY);
+    ctx.lineTo(canvas.width - rightBottomPointX, canvas.height - rightBottomPointY);
 
     // bottom
-    ctx.lineTo(startPointX, canvas.height - endPointX);
+    ctx.lineTo(leftBottomPointX, canvas.height - leftBottomPointY);
 
     //left
-    ctx.lineTo(startPointX, startPointY);
+    ctx.lineTo(leftPointX, leftPointY);
 
-    // frameOutside()
+
 
     ctx.setLineDash([7, 5]);
     ctx.fillStyle = '#0893d2';
@@ -139,21 +163,20 @@ function frameCutter(canvasImgPath, height, width) {
     ctx.lineWidth = lineWidth;
     ctx.stroke();
 
+    ctx.closePath();
 
     putLine();
 
+
     // console.log((canvasWidth - startPointX - startPointX) / 2)
 
+    frameOutside();
+
     ctx.fillStyle = '#0893d2';
-    ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-    ctx.fillRect(canvas.width - endPointY - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-    ctx.fillRect(canvas.width - endPointX - pointRect / 2, canvas.height - endPointY - pointRect / 2, pointRect, pointRect);
-    ctx.fillRect(startPointX - pointRect / 2, canvas.height - endPointX - pointRect / 2, pointRect, pointRect);
-
-
-    ctx.fillStyle = '#54545499';
-    ctx.fillRect(0, 0, originalImgWidth, originalImgHeight);
-    ctx.globalCompositeOperation = 'copy';
+    ctx.fillRect(leftPointX - pointRect / 2, leftPointY - pointRect / 2, pointRect, pointRect);
+    ctx.fillRect(canvasWidth - rightPointX - pointRect / 2, rightPointY - pointRect / 2, pointRect, pointRect);
+    ctx.fillRect(canvasWidth - rightBottomPointX - pointRect / 2, canvasHeight - rightBottomPointY - pointRect / 2, pointRect, pointRect);
+    ctx.fillRect(leftBottomPointX - pointRect / 2, canvasHeight - leftBottomPointY - pointRect / 2, pointRect, pointRect);
 
 
 
@@ -164,6 +187,7 @@ function frameCutter(canvasImgPath, height, width) {
 }
 
 
+
 function putLine() {
 
 
@@ -172,18 +196,7 @@ function putLine() {
         var eX = (originalImgWidth * (100 * event.offsetX) / compress_canvas_width) / 100;
         var eY = (originalImgHeight * (100 * event.offsetY) / compress_canvas_height) / 100;
 
-        if (eX > startPointX - 6 && eX < startPointX + 6 && eY > startPointY + 20 && eY < canvasHeight - endPointY - 6) {
-
-
-            canvas.style.cursor = 'e-resize';
-            event.preventDefault();
-            mouseDown = true;
-            if (mouseDown) {
-                canvas.addEventListener('mousedown', moveLeftLine, false);
-            }
-
-        }
-        else if (eY > startPointY - 10 && eY < startPointY + 19 && eX > startPointX - 10 && eX < startPointX + 19) {
+        if (eY > leftPointY - 10 && eY < leftPointY + 19 && eX > leftPointX - 10 && eX < leftPointX + 19) {
 
             canvas.style.cursor = 'nw-resize';
             event.preventDefault();
@@ -191,176 +204,106 @@ function putLine() {
             if (mouseDown) {
                 canvas.addEventListener('mousedown', moveTopLeftLinePerspective, false);
             }
-        } else if (eY > startPointY - 6 && eY < startPointY + 6 && eX > startPointX + 4 && eX < canvasWidth - endPointX - 6) {
-            canvas.style.cursor = 'n-resize';
-            event.preventDefault();
-            mouseDown = true;
-            if (mouseDown) {
-                canvas.addEventListener('mousedown', moveTopLine, false);
-            }
-        } else if (eY > startPointY - 10 && eY < startPointY + 10 && eX > canvasWidth - endPointX - 4 && eX < canvasWidth - endPointX + 34) {
+        } else if (eY > rightPointY - 10 && eY < rightPointY + 10 && eX > canvasWidth - rightPointX - 4 && eX < canvasWidth - rightPointX + 34) {
 
             canvas.style.cursor = 'sw-resize';
             event.preventDefault();
             mouseDown = true;
             if (mouseDown) {
-                canvas.addEventListener('mousedown', moveTopRightLine, false);
+                canvas.addEventListener('mousedown', moveTopRightLinePerspective, false);
             }
-        } else if (eX > canvasWidth - endPointX && eX < canvasWidth - endPointX + 34 && eY > startPointY + 15 && eY < canvasHeight - endPointY - 10) {
-            canvas.style.cursor = 'w-resize';
-            event.preventDefault();
-            mouseDown = true;
-            if (mouseDown) {
-                canvas.addEventListener('mousedown', moveRightLine, false);
-            }
-
-        } else if (eX > canvasWidth - endPointX - 4 && eX < canvasWidth - endPointX + 32 && eY < canvasHeight - endPointY + 32 && eY > canvasHeight - endPointY - 6) {
+        }  else if (eX > canvasWidth - rightBottomPointX - 4 && eX < canvasWidth - rightBottomPointX + 32 && eY < canvasHeight - rightBottomPointY + 32 && eY > canvasHeight - rightBottomPointY - 6) {
 
             canvas.style.cursor = 'se-resize';
             event.preventDefault();
             mouseDown = true;
             if (mouseDown) {
-                canvas.addEventListener('mousedown', moveRightBottomLine, false);
+                canvas.addEventListener('mousedown', moveRightBottomLinePerspective, false);
             }
 
-        } else if (eY > canvasHeight - endPointY - 2 && eY < canvasHeight - endPointY + 32 && eX < canvasWidth - endPointX - 6 && eX > startPointX + 20) {
-            canvas.style.cursor = 's-resize';
-
-            event.preventDefault();
-            mouseDown = true;
-            if (mouseDown) {
-                canvas.addEventListener('mousedown', moveBottomLine, false);
-            }
-
-        } else if (eX > startPointX - 10 && eX < startPointX + 20 && eY > canvasHeight - endPointY - 20 && eY < canvasHeight - endPointY + 20) {
+        }  else if (eX > leftBottomPointX - 10 && eX < leftBottomPointX + 20 && eY > canvasHeight - leftBottomPointY - 20 && eY < canvasHeight - leftBottomPointY + 20) {
             canvas.style.cursor = 'ne-resize';
 
             event.preventDefault();
             mouseDown = true;
             if (mouseDown) {
-                canvas.addEventListener('mousedown', moveLeftBottomLine, false);
+                canvas.addEventListener('mousedown', moveLeftBottomLinePerspective, false);
             }
 
-        } else if (eX > startPointX + 8 && eX < canvasWidth - endPointX - 8 && eY > startPointY + 8 && eY < canvasHeight - endPointY - 8) {
-            canvas.style.cursor = 'move';
-            event.preventDefault();
-            mouseDown = true;
-            if (mouseDown) {
-                canvas.addEventListener('mousedown', moveCutterFrame);
-            }
+        }
+        //  else if (eX > leftPointX + 8 && eX < canvasWidth - rightPointX - 8 && eY > leftPointY + 8 && eY < canvasHeight - rightPointY - 8) {
+        //     canvas.style.cursor = 'move';
+        //     event.preventDefault();
+        //     mouseDown = true;
+        //     if (mouseDown) {
+        //         canvas.addEventListener('mousedown', moveCutterFrame);
+        //     }
 
-        } else {
+        // }
+         else {
             canvas.style.cursor = 'default';
             mouseDown = false;
-            canvas.removeEventListener('mousedown', moveLeftLine);
+           
             canvas.removeEventListener('mousedown', moveTopLeftLinePerspective);
-            canvas.removeEventListener('mousedown', moveTopLine);
-            canvas.removeEventListener('mousedown', moveTopRightLine);
-            canvas.removeEventListener('mousedown', moveRightLine);
-            canvas.removeEventListener('mousedown', moveRightBottomLine);
-            canvas.removeEventListener('mousedown', moveBottomLine);
-            canvas.removeEventListener('mousedown', moveLeftBottomLine);
+          
+            canvas.removeEventListener('mousedown', moveTopRightLinePerspective);
+          
+            canvas.removeEventListener('mousedown', moveRightBottomLinePerspective);
+          
+            canvas.removeEventListener('mousedown', moveLeftBottomLinePerspective);
             canvas.removeEventListener('mousedown', moveCutterFrame);
         }
     })
 }
 
 
-function moveLeftLine(event) {
 
-    canvas.onmousemove = function (event) {
-        var eX = (originalImgWidth * (100 * event.offsetX) / compress_canvas_width) / 100;
-        if (eX > canvasWidth - endPointX - minWidth) {
-            ctx.closePath()
-        }
-        else {
-            canvas.style.cursor = 'e-resize';
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(canvasImgPath, 0, 0, canvasWidth, canvasHeight);
-
-            ctx.beginPath();
-            ctx.moveTo(eX, startPointY);
-
-            ctx.lineTo(canvasWidth - endPointX, startPointY);
-
-            ctx.lineTo(canvasWidth - endPointX, canvasHeight - endPointY);
-
-            ctx.lineTo(eX, canvasHeight - endPointY);
-
-            ctx.lineTo(eX, startPointY);
-            frameOutside();
-
-            ctx.stroke();
-
-            ctx.fillStyle = '#0893d2';
-            ctx.fillRect(eX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(eX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
-
-            startPointX = eX;
-
-        }
-
-    }
-
-    canvas.onmouseup = function () {
-        canvas.style.cursor = 'default';
-        canvas.onmousemove = null;
-        ctx.closePath();
-        mouseDown = false;
-        canvas.removeEventListener('mousedown', moveLeftLine);
-
-    }
-}
 
 function moveTopLeftLinePerspective(event) {
-    var staticX = startPointX;
-    var staticY = startPointY;
+
+    perspectiveStartPointY = startPointY;
+
     canvas.onmousemove = function (event) {
         var eX = (originalImgWidth * (100 * event.offsetX) / compress_canvas_width) / 100;
         var eY = (originalImgHeight * (100 * event.offsetY) / compress_canvas_height) / 100;
-        
         if (eX > canvasWidth - endPointX - minWidth) {
             ctx.closePath()
         }
         else {
-
-            
             canvas.style.cursor = 'nw-resize';
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(canvasImgPath, 0, 0, canvasWidth, canvasHeight);
-            
+
             ctx.beginPath();
             ctx.moveTo(eX, eY);
 
-            ctx.lineTo(canvasWidth - endPointX, staticY);
+            ctx.lineTo(canvasWidth - rightPointX, rightPointY);
 
-            ctx.lineTo(canvasWidth - endPointX, canvasHeight - endPointY);
+            ctx.lineTo(canvasWidth - rightBottomPointX, canvasHeight - rightBottomPointY);
 
-            ctx.lineTo(staticX, canvasHeight - endPointY);
+            ctx.lineTo(leftBottomPointX, canvasHeight - leftBottomPointY);
 
             ctx.lineTo(eX, eY);
-            frameOutside();
+
 
             ctx.stroke();
-
+            frameOutside();
             ctx.fillStyle = '#0893d2';
             ctx.fillRect(eX - pointRect / 2, eY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, eY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(eX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - rightPointX - pointRect / 2, rightPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - rightBottomPointX - pointRect / 2, canvasHeight - rightBottomPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(leftBottomPointX - pointRect / 2, canvasHeight - leftBottomPointY - pointRect / 2, pointRect, pointRect);
 
-            startPointX = eX;
-            startPointY = eY;
+            leftPointX = eX;
+            leftPointY = eY;
 
         }
 
     }
 
     canvas.onmouseup = function () {
+
         canvas.style.cursor = 'default';
         canvas.onmousemove = null;
         ctx.closePath();
@@ -370,62 +313,9 @@ function moveTopLeftLinePerspective(event) {
     }
 }
 
-function moveTopLine() {
-    canvas.onmousemove = function (event) {
-        var eY = (originalImgHeight * (100 * event.offsetY) / compress_canvas_height) / 100;
-        if (eY > canvasHeight - endPointY - minHeight) {
-            ctx.closePath()
-        }
-        else {
-            canvas.style.cursor = 'n-resize';
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            ctx.drawImage(canvasImgPath, 0, 0, canvasWidth, canvasHeight);
-
-            ctx.beginPath();
-
-            // start
-            ctx.moveTo(startPointX, startPointY);
-            // top
-            ctx.lineTo(canvasWidth - endPointX, startPointY);
-
-            //right
-            ctx.lineTo(canvasWidth - endPointX, canvasHeight - endPointY);
-
-            // bottom
-            ctx.lineTo(startPointX, canvasHeight - endPointY);
-
-            //left
-            ctx.lineTo(startPointX, startPointY);
-            frameOutside();
-
-            ctx.stroke();
-
-            ctx.fillStyle = '#0893d2';
-            ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(startPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
-
-            startPointY = eY;
-
-        }
 
 
-    }
-
-    canvas.onmouseup = function () {
-        canvas.style.cursor = 'default';
-        canvas.onmousemove = null;
-        ctx.closePath();
-        mouseDown = false;
-        canvas.removeEventListener('mousedown', moveLeftLine);
-
-    }
-}
-
-function moveTopRightLine() {
+function moveTopRightLinePerspective() {
     canvas.onmousemove = function (event) {
         var eX = (originalImgWidth * (100 * event.offsetX) / compress_canvas_width) / 100;
         var eY = (originalImgHeight * (100 * event.offsetY) / compress_canvas_height) / 100;
@@ -442,30 +332,30 @@ function moveTopRightLine() {
             ctx.beginPath();
 
             // start
-            ctx.moveTo(startPointX, startPointY);
+            ctx.moveTo(leftPointX, leftPointY);
             // top
-            ctx.lineTo(canvasWidth - endPointX, startPointY);
+            ctx.lineTo(canvasWidth - rightPointX, rightPointY);
 
             //right
-            ctx.lineTo(canvasWidth - endPointX, canvasHeight - endPointY);
+            ctx.lineTo(canvasWidth - rightBottomPointX, canvasHeight - rightBottomPointY);
 
 
-            ctx.lineTo(startPointX, canvasHeight - endPointY);
+            ctx.lineTo(leftBottomPointX, canvasHeight - leftBottomPointY);
 
 
-            ctx.lineTo(startPointX, startPointY);
-            frameOutside();
+            ctx.lineTo(leftPointX, leftPointY);
 
             ctx.stroke();
+            frameOutside();
 
             ctx.fillStyle = '#0893d2';
-            ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(startPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(leftPointX - pointRect / 2, leftPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - rightPointX - pointRect / 2, rightPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - rightBottomPointX - pointRect / 2, canvasHeight - rightBottomPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(leftBottomPointX - pointRect / 2, canvasHeight - leftBottomPointY - pointRect / 2, pointRect, pointRect);
 
-            startPointY = eY;
-            endPointX = canvasWidth - eX;
+            rightPointY = eY;
+            rightPointX = canvasWidth - eX;
 
         }
 
@@ -477,66 +367,13 @@ function moveTopRightLine() {
         canvas.onmousemove = null;
         ctx.closePath();
         mouseDown = false;
-        canvas.removeEventListener('mousedown', moveTopRightLine);
+        canvas.removeEventListener('mousedown', moveTopRightLinePerspective);
 
     }
 }
 
-function moveRightLine() {
-    canvas.onmousemove = function (event) {
-        var eX = (originalImgWidth * (100 * event.offsetX) / compress_canvas_width) / 100;
-        if (eX < startPointX + minWidth) {
-            ctx.closePath()
-        }
-        else {
-            canvas.style.cursor = 'w-resize';
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(canvasImgPath, 0, 0, canvasWidth, canvasHeight);
-
-            ctx.beginPath();
-
-            // start
-
-            // top
-            ctx.moveTo(startPointX, startPointY);
-
-            ctx.lineTo(eX, startPointY);
-
-            ctx.lineTo(eX, canvasHeight - endPointY);
-
-            ctx.lineTo(startPointX, canvasHeight - endPointY);
-
-            ctx.lineTo(startPointX, startPointY);
-
-            frameOutside();
-            ctx.stroke();
-
-            ctx.fillStyle = '#0893d2';
-            ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(eX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(eX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(startPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
-
-            endPointX = canvasWidth - eX;
-
-
-
-        }
-
-    }
-
-    canvas.onmouseup = function () {
-        canvas.style.cursor = 'default';
-        canvas.onmousemove = null;
-        ctx.closePath();
-        mouseDown = false;
-        canvas.removeEventListener('mousedown', moveRightLine);
-
-    }
-}
-
-function moveRightBottomLine() {
+function moveRightBottomLinePerspective() {
     canvas.onmousemove = function (event) {
         var eY = (originalImgHeight * (100 * event.offsetY) / compress_canvas_height) / 100;
         var eX = (originalImgWidth * (100 * event.offsetX) / compress_canvas_width) / 100;
@@ -551,30 +388,29 @@ function moveRightBottomLine() {
             ctx.drawImage(canvasImgPath, 0, 0, canvasWidth, canvasHeight);
 
             ctx.beginPath();
+            ctx.moveTo(leftPointX, leftPointY);
 
-            ctx.moveTo(startPointX, startPointY);
+            ctx.lineTo(canvasWidth - rightPointX, rightPointY);
 
-            ctx.lineTo(eX, startPointY);
+            ctx.lineTo(canvasWidth - rightBottomPointX, canvasHeight - rightBottomPointY);
 
-            ctx.lineTo(eX, eY);
+            ctx.lineTo(leftBottomPointX, canvasHeight - leftBottomPointY);
+
+            ctx.lineTo(leftPointX, leftPointY);
 
 
-            ctx.lineTo(startPointX, eY);
-
-
-            ctx.lineTo(startPointX, startPointY);
-
-            frameOutside();
             ctx.stroke();
 
-            ctx.fillStyle = '#0893d2';
-            ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(eX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(eX - pointRect / 2, eY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(startPointX - pointRect / 2, eY - pointRect / 2, pointRect, pointRect);
+            frameOutside();
 
-            endPointX = canvasWidth - eX;
-            endPointY = canvasHeight - eY;
+            ctx.fillStyle = '#0893d2';
+            ctx.fillRect(leftPointX - pointRect / 2, leftPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - rightPointX - pointRect / 2, rightPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - rightBottomPointX - pointRect / 2, canvasHeight - rightBottomPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(leftBottomPointX - pointRect / 2, canvasHeight - leftBottomPointY - pointRect / 2, pointRect, pointRect);
+
+            rightBottomPointX = canvasWidth - eX;
+            rightBottomPointY = canvasHeight - eY;
 
         }
 
@@ -585,63 +421,14 @@ function moveRightBottomLine() {
         canvas.onmousemove = null;
         ctx.closePath();
         mouseDown = false;
-        canvas.removeEventListener('mousedown', moveRightBottomLine);
+        canvas.removeEventListener('mousedown', moveRightBottomLinePerspective);
 
     }
 }
 
-function moveBottomLine() {
-    canvas.onmousemove = function (event) {
-        var eY = (originalImgHeight * (100 * event.offsetY) / compress_canvas_height) / 100;
-        if (eY < startPointY + minHeight) {
-            ctx.closePath()
-        }
-        else {
-            canvas.style.cursor = 's-resize';
 
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(canvasImgPath, 0, 0, canvasWidth, canvasHeight);
-
-            ctx.beginPath();
-
-            ctx.moveTo(startPointX, startPointY);
-
-            ctx.lineTo(canvasWidth - endPointX, startPointY);
-
-            ctx.lineTo(canvasWidth - endPointX, eY);
-
-
-            ctx.lineTo(startPointX, eY);
-
-            ctx.lineTo(startPointX, startPointY);
-
-            frameOutside();
-            ctx.stroke();
-
-            ctx.fillStyle = '#0893d2';
-            ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, eY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(startPointX - pointRect / 2, eY - pointRect / 2, pointRect, pointRect);
-
-            endPointY = canvasHeight - eY;
-
-        }
-
-    }
-
-    canvas.onmouseup = function () {
-        canvas.style.cursor = 'default';
-        canvas.onmousemove = null;
-        ctx.closePath();
-        mouseDown = false;
-        canvas.removeEventListener('mousedown', moveBottomLine);
-
-    }
-}
-
-function moveLeftBottomLine(event) {
+function moveLeftBottomLinePerspective(event) {
 
     canvas.onmousemove = function (event) {
         var eX = (originalImgWidth * (100 * event.offsetX) / compress_canvas_width) / 100;
@@ -656,27 +443,27 @@ function moveLeftBottomLine(event) {
             ctx.drawImage(canvasImgPath, 0, 0, canvasWidth, canvasHeight);
 
             ctx.beginPath();
-            ctx.moveTo(eX, startPointY);
+            ctx.moveTo(leftPointX, leftPointY);
 
-            ctx.lineTo(canvasWidth - endPointX, startPointY);
+            ctx.lineTo(canvasWidth - rightPointX, rightPointY);
 
-            ctx.lineTo(canvasWidth - endPointX, canvasHeight - endPointY);
+            ctx.lineTo(canvasWidth - rightBottomPointX, canvasHeight - rightBottomPointY);
 
-            ctx.lineTo(eX, canvasHeight - endPointY);
+            ctx.lineTo(leftBottomPointX, canvasHeight - leftBottomPointY);
 
-            ctx.lineTo(eX, startPointY);
-            frameOutside();
+            ctx.lineTo(leftPointX, leftPointY);
 
             ctx.stroke();
+            frameOutside();
 
             ctx.fillStyle = '#0893d2';
-            ctx.fillRect(eX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(eX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(leftPointX - pointRect / 2, leftPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - rightPointX - pointRect / 2, rightPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(canvasWidth - rightBottomPointX - pointRect / 2, canvasHeight - rightBottomPointY - pointRect / 2, pointRect, pointRect);
+            ctx.fillRect(leftBottomPointX - pointRect / 2, canvasHeight - leftBottomPointY - pointRect / 2, pointRect, pointRect);
 
-            startPointX = eX;
-            endPointY = canvasHeight - eY;
+            leftBottomPointX = eX;
+            leftBottomPointY = canvasHeight - eY;
 
         }
 
@@ -687,75 +474,75 @@ function moveLeftBottomLine(event) {
         canvas.onmousemove = null;
         ctx.closePath();
         mouseDown = false;
-        canvas.removeEventListener('mousedown', moveLeftBottomLine);
+        canvas.removeEventListener('mousedown', moveLeftBottomLinePerspective);
 
     }
 }
 
-function moveCutterFrame() {
-    var eX = (originalImgWidth * (100 * event.offsetX) / compress_canvas_width) / 100;
-    var eY = (originalImgHeight * (100 * event.offsetY) / compress_canvas_height) / 100;
-    var startClickPointX = eX;
-    var startClickPointY = eY;
+// function moveCutterFrame() {
+//     var eX = (originalImgWidth * (100 * event.offsetX) / compress_canvas_width) / 100;
+//     var eY = (originalImgHeight * (100 * event.offsetY) / compress_canvas_height) / 100;
+//     var startClickPointX = eX;
+//     var startClickPointY = eY;
 
-    var counterStartPointX = 0;
-    var counterStartPointY = 0;
-    var counterEndPointX = 0;
-    var counterEndPointY = 0;
-    counterStartPointX = startPointX;
-    counterStartPointY = startPointY;
-    counterEndPointX = endPointX;
-    counterEndPointY = endPointY;
-    canvas.onmousemove = function (event) {
-        var eX = (originalImgWidth * (100 * event.offsetX) / compress_canvas_width) / 100;
-        var eY = (originalImgHeight * (100 * event.offsetY) / compress_canvas_height) / 100;
-        moveToX = eX - startClickPointX;
-        moveToY = eY - startClickPointY;
+//     var counterStartPointX = 0;
+//     var counterStartPointY = 0;
+//     var counterEndPointX = 0;
+//     var counterEndPointY = 0;
+//     counterStartPointX = startPointX;
+//     counterStartPointY = startPointY;
+//     counterEndPointX = endPointX;
+//     counterEndPointY = endPointY;
+//     canvas.onmousemove = function (event) {
+//         var eX = (originalImgWidth * (100 * event.offsetX) / compress_canvas_width) / 100;
+//         var eY = (originalImgHeight * (100 * event.offsetY) / compress_canvas_height) / 100;
+//         moveToX = eX - startClickPointX;
+//         moveToY = eY - startClickPointY;
 
-        if (startPointX < 5 || startPointY < 5 || endPointX < 5 || endPointY < 5) {
-            ctx.closePath();
+//         if (startPointX < 5 || startPointY < 5 || endPointX < 5 || endPointY < 5) {
+//             ctx.closePath();
 
-        }
-        else {
+//         }
+//         else {
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(canvasImgPath, 0, 0, canvasWidth, canvasHeight);
-            ctx.beginPath();
-            var sliceLeftX = startPointX;
-            var sliceLeftY = startPointY;
-            var sliceWidth = canvasWidth - startPointX - endPointX;
-            var sliceHeight = canvasHeight - startPointY - endPointY;
+//             ctx.clearRect(0, 0, canvas.width, canvas.height);
+//             ctx.drawImage(canvasImgPath, 0, 0, canvasWidth, canvasHeight);
+//             ctx.beginPath();
+//             var sliceLeftX = leftPointX;
+//             var sliceLeftY = leftPointY;
+//             var sliceWidth = canvasWidth - leftPointX - rightPointX;
+//             var sliceHeight = canvasHeight - leftPointY - rightPointY;
 
-            ctx.rect(sliceLeftX, sliceLeftY, sliceWidth, sliceHeight);
+//             ctx.rect(sliceLeftX, sliceLeftY, sliceWidth, sliceHeight);
 
-            frameOutside();
-            ctx.stroke();
+//             ctx.stroke();
+//             frameOutside();
 
-            ctx.fillStyle = '#0893d2';
-            ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(canvasWidth - endPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
-            ctx.fillRect(startPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
+//             ctx.fillStyle = '#0893d2';
+//             ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+//             ctx.fillRect(canvasWidth - endPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
+//             ctx.fillRect(canvasWidth - endPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
+//             ctx.fillRect(startPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
 
 
-        }
-        startPointX = counterStartPointX + moveToX;
-        startPointY = counterStartPointY + moveToY;
-        endPointX = counterEndPointX - moveToX;
-        endPointY = counterEndPointY - moveToY;
+//         }
+//         startPointX = counterStartPointX + moveToX;
+//         startPointY = counterStartPointY + moveToY;
+//         endPointX = counterEndPointX - moveToX;
+//         endPointY = counterEndPointY - moveToY;
 
-    }
-    canvas.onmouseup = function () {
+//     }
+//     canvas.onmouseup = function () {
 
-        canvas.style.cursor = 'default';
-        canvas.onmousemove = null;
-        ctx.closePath();
-        mouseDown = false;
-        canvas.removeEventListener('mousedown', moveCutterFrame);
+//         canvas.style.cursor = 'default';
+//         canvas.onmousemove = null;
+//         ctx.closePath();
+//         mouseDown = false;
+//         canvas.removeEventListener('mousedown', moveCutterFrame);
 
-    }
+//     }
 
-}
+// }
 
 
 
@@ -781,25 +568,28 @@ function cutImage() {
 
 
 
+
     var imageLeftLeg = new Image();
     var imageRightLeg = new Image();
-  
-    
+
+
     imageLeftLeg.src = 'left_stick.png';
     imageLeftLeg.crossOrigin = "Anonymous";
 
     imageRightLeg.src = 'right_stick.png';
     imageRightLeg.crossOrigin = "Anonymous";
-    
+
 
     console.log(sliceHeight, sliceWidth, sliceWidth - sliceWidth * 0.2);
     imageRightLeg.onload = function () {
-
         ctxPr.clearRect(0, 0, canvasPreview.width, canvasPreview.height);
-        ctxPr.drawImage(canvasImgPath, sliceLeftX, sliceLeftY, sliceWidth, sliceHeight, startPoint, startPoint, sliceWidth, sliceHeight - (originalImgHeight / 25));
 
-        ctxPr.drawImage(imageLeftLeg, sliceWidth * 0.2, sliceHeight - (originalImgHeight / 25), originalImgWidth / 20, originalImgHeight / 25);
-        ctxPr.drawImage(imageRightLeg, sliceWidth - sliceWidth * 0.25, sliceHeight - (originalImgHeight / 25), originalImgWidth / 20, originalImgHeight / 25);
+        ctxPr.fillStyle = '#ffffff';
+        ctxPr.fillRect(0, 0, canvasPreview.width, canvasPreview.height);
+        ctxPr.drawImage(canvasImgPath, sliceLeftX, sliceLeftY, sliceWidth, sliceHeight, startPoint + 20, startPoint + 20, sliceWidth - 40, sliceHeight - (originalImgHeight / 25) - 30);
+
+        ctxPr.drawImage(imageLeftLeg, sliceWidth * 0.2, sliceHeight - (originalImgHeight / 25) - 10, originalImgWidth / 20, originalImgHeight / 25);
+        ctxPr.drawImage(imageRightLeg, sliceWidth - sliceWidth * 0.25, sliceHeight - (originalImgHeight / 25) - 10, originalImgWidth / 20, originalImgHeight / 25);
 
         var prUrl = canvasPreview.toDataURL("image/jpeg");
 
@@ -813,17 +603,68 @@ function cutImage() {
 }
 
 function frameOutside() {
-    ctx.restore();
+    // ctx.restore();
     ctx.fillStyle = "#22222285";
+    // ctx.strokeStyle = 'none';
 
     // top
-    ctx.fillRect(startPoint, startPoint, canvasWidth, startPointY);
+    ctx.beginPath();
+
+    ctx.moveTo(startPoint, startPoint);
+    ctx.lineTo(canvasWidth, startPoint);
+    ctx.lineTo(canvasWidth, rightPointY);
+    ctx.lineTo(canvasWidth - rightPointX, rightPointY);
+    ctx.lineTo(canvasWidth - rightPointX, rightPointY);
+    ctx.lineTo(leftPointX, leftPointY);
+    ctx.lineTo(leftPointX, leftPointY)
+    ctx.lineTo(startPoint, leftPointY)
+    ctx.lineTo(startPoint, startPoint)
+
+    ctx.fill()
+    
     // left
-    ctx.fillRect(startPoint, startPointY, startPointX, canvasHeight);
+
+    ctx.beginPath();
+
+    ctx.moveTo(startPoint, leftPointY);
+    ctx.lineTo(leftPointX, leftPointY);
+    ctx.lineTo(leftBottomPointX, canvasHeight - leftBottomPointY);
+    ctx.lineTo(leftBottomPointX, canvasHeight);
+    ctx.lineTo(startPoint, canvasHeight);
+    ctx.lineTo(startPoint, leftPointY);
+    
+
+    ctx.fill();
+
     //bottom
-    ctx.fillRect(startPointX, canvasHeight - endPointY, canvasWidth, endPointY);
-    // right
-    ctx.fillRect(canvasWidth - endPointX, startPointY, endPointX, canvasHeight - startPointY - endPointY);
+
+    ctx.beginPath();
+
+    ctx.moveTo(leftBottomPointX, canvasHeight);
+    ctx.lineTo(leftBottomPointX, canvasHeight - leftBottomPointY);
+    ctx.lineTo(canvasWidth - rightBottomPointX, canvasHeight - rightBottomPointY);
+    ctx.lineTo(canvasWidth, canvasHeight - rightBottomPointY);
+    ctx.lineTo(canvasWidth, canvasHeight);
+    ctx.lineTo(leftBottomPointX, canvasHeight);
+    
+
+    ctx.fill();
+
+    //right
+
+    ctx.beginPath();
+
+    ctx.moveTo(canvasWidth - rightBottomPointX, canvasHeight - rightBottomPointY);
+    ctx.lineTo(canvasWidth, canvasHeight - rightBottomPointY);
+    ctx.lineTo(canvasWidth, rightPointY);
+    ctx.lineTo(canvasWidth - rightPointX, rightPointY);
+    ctx.lineTo(canvasWidth - rightBottomPointX, canvasHeight - rightBottomPointY)
+
+
+    ctx.fill()
+    
+
+    
 
 }
 
