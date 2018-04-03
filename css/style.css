@@ -144,6 +144,9 @@ header{
 .download__btn--block{
     margin-top: 20px;
 }
+.test__canvas{
+    display: none;
+}
 
 @media screen and (max-width : 769px){
     .container{
