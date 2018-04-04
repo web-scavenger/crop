@@ -2,13 +2,12 @@ var addNewImgBtn = document.getElementById('add__new--img');// button for upload
 
 var canvas = document.getElementById('canvas');
 var canvasPreview = document.getElementById('canvas__preview');
-
-var test_canvas = document.getElementById('test__canvas');
+var hiddenCanvas = document.getElementById('test__canvas');
 
 var ctx = canvas.getContext('2d');
-var ctxPr = canvasPreview.getContext('2d'); 
+var ctxPr = canvasPreview.getContext('2d');
+var ctxHidCan = hiddenCanvas.getContext('2d');
 
-var ctxTest = test_canvas.getContext('2d');
 var cutButton = document.getElementById('preview__btn');
 
 document.querySelector('.back__btn').addEventListener('click', function () {
@@ -33,9 +32,6 @@ var leftBottomPointY;
 
 var sliceWidth;
 var sliceHeight;
-var sliceWidthTest;
-
-
 
 // min size for cutter frame. 20% of dwnld img
 var minWidth = 0;
@@ -50,18 +46,17 @@ var lineWidth; // frame width
 var canvasWidth = window.innerWidth;
 var canvasHeight = window.innerHeight;
 var mouseDown = false;
+var onLoadBool = false;
 var moveToY;
 var moveToX;
 
 var originalImgWidth;
 var originalImgHeight;
 
-
 var compress_canvas_width;
 var compress_canvas_height;
 
 var imageName;
-
 
 cutButton.addEventListener('click', cutImage);
 
@@ -69,7 +64,6 @@ cutButton.addEventListener('click', cutImage);
 addNewImgBtn.addEventListener("change", downloadNewImg);
 //dwld image form input to canvas
 function downloadNewImg(event) {
-
     var input = event.target;
     var reader = new FileReader();
 
@@ -83,10 +77,7 @@ function downloadNewImg(event) {
             console.log(output.offsetHeight + ' / ' + output.offsetWidth)
             frameCutter(output, output.offsetHeight, output.offsetWidth);
             output.classList.add('display__none');
-
         }
-
-
     };
     reader.readAsDataURL(input.files[0]);
     imageName = input.files[0].name;
@@ -137,17 +128,12 @@ function frameCutter(canvasImgPath, height, width) {
     rightBottomPointX = retreat;
     rightBottomPointY = retreat;
 
-
-
-
     ctx.drawImage(canvasImgPath, 0, 0, originalImgWidth, originalImgHeight);
 
 
     ctx.beginPath();
 
-
     // start
-
     ctx.fillStyle = '#0893d2';
     ctx.moveTo(leftPointX, leftPointY);
 
@@ -163,8 +149,6 @@ function frameCutter(canvasImgPath, height, width) {
     //left
     ctx.lineTo(leftPointX, leftPointY);
 
-
-
     ctx.setLineDash([7, 5]);
     ctx.fillStyle = '#0893d2';
     ctx.strokeStyle = '#0893d2';
@@ -175,9 +159,6 @@ function frameCutter(canvasImgPath, height, width) {
 
     putLine();
 
-
-    // console.log((canvasWidth - startPointX - startPointX) / 2)
-
     frameOutside();
 
     ctx.fillStyle = '#0893d2';
@@ -186,25 +167,20 @@ function frameCutter(canvasImgPath, height, width) {
     ctx.fillRect(canvasWidth - rightBottomPointX - pointRect / 2, canvasHeight - rightBottomPointY - pointRect / 2, pointRect, pointRect);
     ctx.fillRect(leftBottomPointX - pointRect / 2, canvasHeight - leftBottomPointY - pointRect / 2, pointRect, pointRect);
 
-
-
     compress_canvas_width = document.getElementById('canvas').offsetWidth;
     compress_canvas_height = document.getElementById('canvas').offsetHeight;
-
-
 }
 
 
 
 function putLine() {
 
-
     canvas.addEventListener('mousemove', function (event) {
 
         var eX = (originalImgWidth * (100 * event.offsetX) / compress_canvas_width) / 100;
         var eY = (originalImgHeight * (100 * event.offsetY) / compress_canvas_height) / 100;
 
-        if (eY > leftPointY - 10 && eY < leftPointY + 19 && eX > leftPointX - 10 && eX < leftPointX + 19) {
+        if (eY > leftPointY - (originalImgWidth / 50) && eY < leftPointY + (originalImgWidth / 50) && eX > leftPointX - (originalImgWidth / 50) && eX < leftPointX + (originalImgWidth / 50)) {
 
             canvas.style.cursor = 'nw-resize';
             event.preventDefault();
@@ -212,7 +188,7 @@ function putLine() {
             if (mouseDown) {
                 canvas.addEventListener('mousedown', moveTopLeftLinePerspective, false);
             }
-        } else if (eY > rightPointY - 10 && eY < rightPointY + 10 && eX > canvasWidth - rightPointX - 4 && eX < canvasWidth - rightPointX + 34) {
+        } else if (eY > rightPointY - (originalImgWidth / 50) && eY < rightPointY + (originalImgWidth / 50) && eX > canvasWidth - rightPointX - (originalImgWidth / 50) && eX < canvasWidth - rightPointX + (originalImgWidth / 50)) {
 
             canvas.style.cursor = 'sw-resize';
             event.preventDefault();
@@ -220,7 +196,7 @@ function putLine() {
             if (mouseDown) {
                 canvas.addEventListener('mousedown', moveTopRightLinePerspective, false);
             }
-        } else if (eX > canvasWidth - rightBottomPointX - 4 && eX < canvasWidth - rightBottomPointX + 32 && eY < canvasHeight - rightBottomPointY + 32 && eY > canvasHeight - rightBottomPointY - 6) {
+        } else if (eX > canvasWidth - rightBottomPointX - (originalImgWidth / 50) && eX < canvasWidth - rightBottomPointX + (originalImgWidth / 50) && eY < canvasHeight - rightBottomPointY + (originalImgWidth / 50) && eY > canvasHeight - rightBottomPointY - (originalImgWidth / 50)) {
 
             canvas.style.cursor = 'se-resize';
             event.preventDefault();
@@ -229,7 +205,7 @@ function putLine() {
                 canvas.addEventListener('mousedown', moveRightBottomLinePerspective, false);
             }
 
-        } else if (eX > leftBottomPointX - 10 && eX < leftBottomPointX + 20 && eY > canvasHeight - leftBottomPointY - 20 && eY < canvasHeight - leftBottomPointY + 20) {
+        } else if (eX > leftBottomPointX - (originalImgWidth / 50) && eX < leftBottomPointX + (originalImgWidth / 50) && eY > canvasHeight - leftBottomPointY - (originalImgWidth / 50) && eY < canvasHeight - leftBottomPointY + (originalImgWidth / 50)) {
             canvas.style.cursor = 'ne-resize';
 
             event.preventDefault();
@@ -239,15 +215,6 @@ function putLine() {
             }
 
         }
-        //  else if (eX > leftPointX + 8 && eX < canvasWidth - rightPointX - 8 && eY > leftPointY + 8 && eY < canvasHeight - rightPointY - 8) {
-        //     canvas.style.cursor = 'move';
-        //     event.preventDefault();
-        //     mouseDown = true;
-        //     if (mouseDown) {
-        //         canvas.addEventListener('mousedown', moveCutterFrame);
-        //     }
-
-        // }
         else {
             canvas.style.cursor = 'default';
             mouseDown = false;
@@ -259,12 +226,10 @@ function putLine() {
             canvas.removeEventListener('mousedown', moveRightBottomLinePerspective);
 
             canvas.removeEventListener('mousedown', moveLeftBottomLinePerspective);
-            // canvas.removeEventListener('mousedown', moveCutterFrame);
+
         }
     })
 }
-
-
 
 
 function moveTopLeftLinePerspective(event) {
@@ -294,7 +259,6 @@ function moveTopLeftLinePerspective(event) {
 
             ctx.lineTo(eX, eY);
 
-
             ctx.stroke();
             frameOutside();
             ctx.fillStyle = '#0893d2';
@@ -311,16 +275,13 @@ function moveTopLeftLinePerspective(event) {
     }
 
     canvas.onmouseup = function () {
-
         canvas.style.cursor = 'default';
         canvas.onmousemove = null;
         ctx.closePath();
         mouseDown = false;
         canvas.removeEventListener('mousedown', moveTopLeftLinePerspective);
-
     }
 }
-
 
 
 function moveTopRightLinePerspective() {
@@ -338,21 +299,16 @@ function moveTopRightLinePerspective() {
             ctx.drawImage(canvasImgPath, 0, 0, canvasWidth, canvasHeight);
 
             ctx.beginPath();
-
             // start
             ctx.moveTo(leftPointX, leftPointY);
             // top
             ctx.lineTo(canvasWidth - rightPointX, rightPointY);
-
             //right
             ctx.lineTo(canvasWidth - rightBottomPointX, canvasHeight - rightBottomPointY);
-
-
+            // bottom
             ctx.lineTo(leftBottomPointX, canvasHeight - leftBottomPointY);
-
-
+            //left
             ctx.lineTo(leftPointX, leftPointY);
-
             ctx.stroke();
             frameOutside();
 
@@ -366,8 +322,6 @@ function moveTopRightLinePerspective() {
             rightPointX = canvasWidth - eX;
 
         }
-
-
     }
 
     canvas.onmouseup = function () {
@@ -376,7 +330,6 @@ function moveTopRightLinePerspective() {
         ctx.closePath();
         mouseDown = false;
         canvas.removeEventListener('mousedown', moveTopRightLinePerspective);
-
     }
 }
 
@@ -406,7 +359,6 @@ function moveRightBottomLinePerspective() {
 
             ctx.lineTo(leftPointX, leftPointY);
 
-
             ctx.stroke();
 
             frameOutside();
@@ -419,7 +371,6 @@ function moveRightBottomLinePerspective() {
 
             rightBottomPointX = canvasWidth - eX;
             rightBottomPointY = canvasHeight - eY;
-
         }
 
     }
@@ -430,10 +381,8 @@ function moveRightBottomLinePerspective() {
         ctx.closePath();
         mouseDown = false;
         canvas.removeEventListener('mousedown', moveRightBottomLinePerspective);
-
     }
 }
-
 
 
 function moveLeftBottomLinePerspective(event) {
@@ -472,9 +421,7 @@ function moveLeftBottomLinePerspective(event) {
 
             leftBottomPointX = eX;
             leftBottomPointY = canvasHeight - eY;
-
         }
-
     }
 
     canvas.onmouseup = function () {
@@ -483,75 +430,8 @@ function moveLeftBottomLinePerspective(event) {
         ctx.closePath();
         mouseDown = false;
         canvas.removeEventListener('mousedown', moveLeftBottomLinePerspective);
-
     }
 }
-
-// function moveCutterFrame() {
-//     var eX = (originalImgWidth * (100 * event.offsetX) / compress_canvas_width) / 100;
-//     var eY = (originalImgHeight * (100 * event.offsetY) / compress_canvas_height) / 100;
-//     var startClickPointX = eX;
-//     var startClickPointY = eY;
-
-//     var counterStartPointX = 0;
-//     var counterStartPointY = 0;
-//     var counterEndPointX = 0;
-//     var counterEndPointY = 0;
-//     counterStartPointX = startPointX;
-//     counterStartPointY = startPointY;
-//     counterEndPointX = endPointX;
-//     counterEndPointY = endPointY;
-//     canvas.onmousemove = function (event) {
-//         var eX = (originalImgWidth * (100 * event.offsetX) / compress_canvas_width) / 100;
-//         var eY = (originalImgHeight * (100 * event.offsetY) / compress_canvas_height) / 100;
-//         moveToX = eX - startClickPointX;
-//         moveToY = eY - startClickPointY;
-
-//         if (startPointX < 5 || startPointY < 5 || endPointX < 5 || endPointY < 5) {
-//             ctx.closePath();
-
-//         }
-//         else {
-
-//             ctx.clearRect(0, 0, canvas.width, canvas.height);
-//             ctx.drawImage(canvasImgPath, 0, 0, canvasWidth, canvasHeight);
-//             ctx.beginPath();
-//             var sliceLeftX = leftPointX;
-//             var sliceLeftY = leftPointY;
-//             var sliceWidth = canvasWidth - leftPointX - rightPointX;
-//             var sliceHeight = canvasHeight - leftPointY - rightPointY;
-
-//             ctx.rect(sliceLeftX, sliceLeftY, sliceWidth, sliceHeight);
-
-//             ctx.stroke();
-//             frameOutside();
-
-//             ctx.fillStyle = '#0893d2';
-//             ctx.fillRect(startPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-//             ctx.fillRect(canvasWidth - endPointX - pointRect / 2, startPointY - pointRect / 2, pointRect, pointRect);
-//             ctx.fillRect(canvasWidth - endPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
-//             ctx.fillRect(startPointX - pointRect / 2, canvasHeight - endPointY - pointRect / 2, pointRect, pointRect);
-
-
-//         }
-//         startPointX = counterStartPointX + moveToX;
-//         startPointY = counterStartPointY + moveToY;
-//         endPointX = counterEndPointX - moveToX;
-//         endPointY = counterEndPointY - moveToY;
-
-//     }
-//     canvas.onmouseup = function () {
-
-//         canvas.style.cursor = 'default';
-//         canvas.onmousemove = null;
-//         ctx.closePath();
-//         mouseDown = false;
-//         canvas.removeEventListener('mousedown', moveCutterFrame);
-
-//     }
-
-// }
-
 
 
 function cutImage() {
@@ -560,61 +440,46 @@ function cutImage() {
     var coecifX = originalImgWidth / (canvasWidth);
     var coecifY = originalImgHeight / (canvasHeight);
 
-
     var sliceLeftX = ((originalImgWidth * (Math.floor(100 * startPointX) / canvasWidth)) / 100);
     var sliceLeftY = ((originalImgHeight * (Math.floor(100 * startPointY) / canvasHeight)) / 100);
-    sliceWidth = originalImgWidth - sliceLeftX - (Math.floor(originalImgWidth * ((100 * endPointX) / canvasWidth) / 100));
-    sliceHeight = originalImgHeight - sliceLeftY - (Math.floor(originalImgHeight * ((100 * endPointY) / canvasHeight) / 100));
-
-    
-
-    
-    
-
-    var b = Math.pow((leftBottomPointY -  rightPointY), 2);
-    var g = Math.pow((canvasWidth -  leftBottomPointX -  rightBottomPointX), 2);
+    sliceHeight = ((canvasHeight - leftPointX - leftBottomPointX) + (canvasHeight - rightPointX - rightBottomPointX)) / 2;
+    // borders od canvas. To caulculate right slice width
+    var b = Math.pow((leftBottomPointY - rightPointY), 2);
+    var g = Math.pow((canvasWidth - leftBottomPointX - rightBottomPointX), 2);
     var a = Math.sqrt(b + g);
     var d = (canvasHeight - leftPointY - leftBottomPointY);
     var c = (canvasHeight - rightPointY - rightBottomPointY)
 
-  
-    sliceWidthTest = a * (c / d);
- 
+    sliceWidth = a * (c / d);
 
-    canvasPreview.width = sliceWidthTest;
-    canvasPreview.height = sliceHeight + originalImgHeight / 25 + 30;
+    canvasPreview.width = sliceWidth;
+    canvasPreview.height = sliceHeight + 30 + originalImgHeight / 25;
     canvasPreview.style.width = '100%';
     canvasPreview.style.height = 'auto';
 
-    test_canvas.width = sliceWidthTest;
-    test_canvas.height = sliceHeight;
-    test_canvas.style.width = '100%';
-    test_canvas.style.height = 'auto';
-  
+    hiddenCanvas.width = sliceWidth;
+    hiddenCanvas.height = sliceHeight;
+    hiddenCanvas.style.width = '100%';
+    hiddenCanvas.style.height = 'auto';
 
-    //test code
-
-    mapTriangle(ctxTest,
+    mapTriangle(ctxHidCan,
         leftPointX, leftPointY, canvasWidth - rightBottomPointX, canvasHeight - rightBottomPointY, leftBottomPointX, canvasHeight - leftBottomPointY,
-        0, 0, sliceWidthTest, canvasPreview.height, 0, canvasPreview.height
+        0, 0, sliceWidth, sliceHeight, 0, sliceHeight
     );
-
     // eliminate slight space between triangles
-    ctxTest.translate(-1, 1);
+    ctxHidCan.translate(-1, 1);
 
     // unwarp the top-right triangle of the warped polygon
-    mapTriangle(ctxTest,
+    mapTriangle(ctxHidCan,
         leftPointX, leftPointY, canvasWidth - rightPointX, rightPointY, canvasWidth - rightBottomPointX, canvasHeight - rightBottomPointY,
-        0, 0, sliceWidthTest, 0, sliceWidthTest, canvasPreview.height
+        0, 0, sliceWidth, 0, sliceWidth, sliceHeight
     );
-
-
 
 }
 
 
 function mapTriangle(ctx, p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, p_0_x, p_0_y, p_1_x, p_1_y, p_2_x, p_2_y) {
-    
+
     // break out the individual triangles x's & y's
     var x0 = p_0_x, y0 = p_0_y;
     var x1 = p_1_x, y1 = p_1_y;
@@ -650,7 +515,7 @@ function mapTriangle(ctx, p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, p_0_x, p_0_y, p_1_
         delta_c / delta, delta_f / delta
     );
 
-    // bottom legs
+    // bottom slab legs
     var imageLeftLeg = new Image();
     var imageRightLeg = new Image();
 
@@ -659,30 +524,48 @@ function mapTriangle(ctx, p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, p_0_x, p_0_y, p_1_
 
     imageRightLeg.src = 'right_stick.png';
     imageRightLeg.crossOrigin = "Anonymous";
-    
+
     ctx.fillStyle = '#ffffff';
 
-    ctx.drawImage(canvasImgPath, 0, 0 );
-    
-    var prDataUrl = test_canvas.toDataURL("image/jpeg");
-    var previewDataImage = new Image();
+    ctx.drawImage(canvasImgPath, 0, 0);
 
-    
+    var prDataUrl = hiddenCanvas.toDataURL("image/jpeg");
+    var previewDataImage = new Image();
+    // canvas priview with legs drawing 
     previewDataImage.onload = function () {
         ctxPr.clearRect(0, 0, canvasPreview.width, canvasPreview.height);
-        
+
         ctxPr.fillStyle = '#ffffff';
         ctxPr.fillRect(0, 0, canvasPreview.width, canvasPreview.height);
-        ctxPr.drawImage(previewDataImage, startPoint + 20, startPoint + 20, sliceWidthTest - 40, sliceHeight - 30);
-
-        ctxPr.drawImage(imageLeftLeg, sliceWidthTest * 0.2, sliceHeight - 10, sliceWidthTest / 20, originalImgHeight / 25);
-        ctxPr.drawImage(imageRightLeg, sliceWidthTest - sliceWidthTest * 0.25, sliceHeight - 10, sliceWidthTest / 20, originalImgHeight / 25);
-
-        var prUrl = canvasPreview.toDataURL("image/jpeg");
-
-        document.querySelector('.download__btn--block').style.display = 'block';
-        document.getElementById('prev__cut__image__url').setAttribute('href', prUrl);
-        document.getElementById('prev__cut__image__url').download = imageName;
+        ctxPr.drawImage(previewDataImage, startPoint + 20, startPoint + 20, sliceWidth - 40, sliceHeight - 30);
+        if(!onLoadBool){
+            imageLeftLeg.onload = function () {
+                ctxPr.drawImage(imageLeftLeg, sliceWidth * 0.2, sliceHeight - 10, sliceWidth / 20, originalImgHeight / 25);
+                imageRightLeg.onload = function () {
+                    ctxPr.drawImage(imageRightLeg, sliceWidth - sliceWidth * 0.25, sliceHeight - 10, sliceWidth / 20, originalImgHeight / 25);
+                    var prUrl = canvasPreview.toDataURL("image/jpeg");
+    
+                    document.querySelector('.download__btn--block').style.display = 'block';
+                    document.getElementById('prev__cut__image__url').setAttribute('href', prUrl);
+                    document.getElementById('prev__cut__image__url').download = imageName;
+                    onLoadBool = true;
+                }
+    
+            }
+        }
+        else{
+            ctxPr.drawImage(imageLeftLeg, sliceWidth * 0.2, sliceHeight - 10, sliceWidth / 20, originalImgHeight / 25);
+               
+                    ctxPr.drawImage(imageRightLeg, sliceWidth - sliceWidth * 0.25, sliceHeight - 10, sliceWidth / 20, originalImgHeight / 25);
+                    var prUrl = canvasPreview.toDataURL("image/jpeg");
+    
+                    document.querySelector('.download__btn--block').style.display = 'block';
+                    document.getElementById('prev__cut__image__url').setAttribute('href', prUrl);
+                    document.getElementById('prev__cut__image__url').download = imageName;
+                    onLoadBool = true;
+                
+        }
+        
 
     }
     previewDataImage.src = prDataUrl;
@@ -691,9 +574,8 @@ function mapTriangle(ctx, p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, p_0_x, p_0_y, p_1_
 
 
 function frameOutside() {
-    // ctx.restore();
+
     ctx.fillStyle = "#22222285";
-    // ctx.strokeStyle = 'none';
 
     // top
     ctx.beginPath();
@@ -711,7 +593,6 @@ function frameOutside() {
     ctx.fill()
 
     // left
-
     ctx.beginPath();
 
     ctx.moveTo(startPoint, leftPointY);
@@ -725,7 +606,6 @@ function frameOutside() {
     ctx.fill();
 
     //bottom
-
     ctx.beginPath();
 
     ctx.moveTo(leftBottomPointX, canvasHeight);
@@ -739,7 +619,6 @@ function frameOutside() {
     ctx.fill();
 
     //right
-
     ctx.beginPath();
 
     ctx.moveTo(canvasWidth - rightBottomPointX, canvasHeight - rightBottomPointY);
@@ -748,11 +627,7 @@ function frameOutside() {
     ctx.lineTo(canvasWidth - rightPointX, rightPointY);
     ctx.lineTo(canvasWidth - rightBottomPointX, canvasHeight - rightBottomPointY)
 
-
     ctx.fill()
-
-
-
 
 }
 
